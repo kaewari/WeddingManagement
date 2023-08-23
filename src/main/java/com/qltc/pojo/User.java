@@ -19,8 +19,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -32,6 +34,19 @@ import lombok.Setter;
 @Table(name = "users")
 public class User implements Serializable {
 
+    /**
+     * @return the file
+     */
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    /**
+     * @param file the file to set
+     */
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -55,6 +70,8 @@ public class User implements Serializable {
     @Basic(optional = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
+    @Transient
+    private MultipartFile file;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employeeId")
     private Employee employeeId;

@@ -4,6 +4,8 @@
  */
 package com.qltc.service;
 
+import com.qltc.pojo.User;
+import java.util.List;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 /**
@@ -12,4 +14,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
  */
 public interface UserService extends UserDetailsService {
 
+    User getUserById(Integer id);
+
+    List<User> getUsers();
+
+    Boolean deleteUserById(Integer id);
+
+    Boolean addOrUpdateUser(User u);
 }
