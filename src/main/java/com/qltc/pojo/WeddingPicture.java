@@ -24,7 +24,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "wedding_pictures")
-public class WeddingPictures implements Serializable {
+public class WeddingPicture implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -37,5 +37,5 @@ public class WeddingPictures implements Serializable {
     private Boolean isPublic;
     @ManyToOne(optional = false)
     @JoinColumn(name = "weddingId", referencedColumnName = "id")
-    private Weddings weddingId;
+    private Wedding weddingId;
 }

@@ -28,7 +28,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "dish")
-public class Dishes implements Serializable {
+public class Dish implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -36,6 +36,19 @@ public class Dishes implements Serializable {
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
+    private String image;
+    @Basic(optional = false)
+    private String price;
+    @Basic(optional = false)
+    private Float discount;
+    @Basic(optional = false)
+    private String unit;
+    @Basic(optional = false)
+    private String type;
+    @Basic(optional = false)
+    private Boolean wOnly;
+    @Basic(optional = false)
+    private Boolean isAvailable;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dishId")

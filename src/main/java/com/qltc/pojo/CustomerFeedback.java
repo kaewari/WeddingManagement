@@ -28,7 +28,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "comment")
-public class CustomerFeedbacks implements Serializable {
+public class CustomerFeedback implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,9 +44,9 @@ public class CustomerFeedbacks implements Serializable {
     private String reply;
     @JoinColumn(name = "customerId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private Users customerId;
+    private User customerId;
     @JoinColumn(name = "userId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private Users userId;
+    private User userId;
 
 }

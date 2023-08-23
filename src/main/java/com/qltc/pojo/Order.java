@@ -28,7 +28,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "orders")
-public class Orders implements Serializable {
+public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,11 +39,19 @@ public class Orders implements Serializable {
     private Integer id;
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
+    @Basic(optional = false)
+    private Long deposit;
+    @Basic(optional = false)
+    private Long discount;
+    @Basic(optional = false)
+    private String paidVia;
+    @Basic(optional = false)
+    private String note;
     @JoinColumn(name = "customerId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private Users customerId;
+    private User customerId;
     @JoinColumn(name = "employeeId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private Users employeeId;
+    private User employeeId;
 
 }

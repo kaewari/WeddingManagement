@@ -36,10 +36,10 @@ public class DishesInBranch implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(name = "dishId", referencedColumnName = "id")
     @Basic(optional = false)
-    private Dishes dishId;
+    private Dish dishId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "branchId", referencedColumnName = "id")
     @Basic(optional = false)
-    private Branches branchId;
+    private Branch branchId;
 
 }

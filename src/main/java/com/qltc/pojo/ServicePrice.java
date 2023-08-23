@@ -42,7 +42,7 @@ public class ServicePrice implements Serializable {
     private Boolean isAvailable;
     @JoinColumn(name = "serviceId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private WeddingServices weddingservicesId;
+    private WeddingService weddingservicesId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "servicePriceId")
-    private Set<OrderDetailsServices> orderDetailsServicesSet;
+    private Set<OrderServiceDetails> orderDetailsServicesSet;
 }

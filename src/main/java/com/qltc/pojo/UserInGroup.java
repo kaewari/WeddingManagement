@@ -32,7 +32,7 @@ public class UserInGroup implements Serializable {
     private Integer id;
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId", referencedColumnName = "id")
-    private Users userId;
+    private User userId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "groupId", referencedColumnName = "id")
     private UserGroups groupId;

@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "users")
-public class Users implements Serializable {
+public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,17 +57,19 @@ public class Users implements Serializable {
     private Date createdDate;
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employeeId")
-    private Employees employeeId;
+    private Employee employeeId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerId")
-    private Set<Weddings> weddingCustomerSet;
+    private Set<Wedding> weddingCustomerSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    private Set<Weddings> weddingUserSet;
+    private Set<Wedding> weddingUserSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerId")
-    private Set<CustomerFeedbacks> customerFeedBacksSet;
+    private Set<CustomerFeedback> customerFeedBacksSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    private Set<CustomerFeedbacks> userFeedBacksSet;
+    private Set<CustomerFeedback> userFeedBacksSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<UserPermission> userPermissionSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<UserInGroup> userInGroupSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private Set<Hall> hallSet;
 }

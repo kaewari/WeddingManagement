@@ -26,7 +26,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "employees")
-public class Employees extends Users implements Serializable {
+public class Employee extends User implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -43,9 +43,9 @@ public class Employees extends Users implements Serializable {
     private String position;
     @OneToOne(mappedBy = "employeeId", fetch = FetchType.LAZY)
     @Basic(optional = false)
-    private Users userId;
+    private User userId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "branchId", referencedColumnName = "id")
     @Basic(optional = false)
-    private Branches branchId;
+    private Branch branchId;
 }

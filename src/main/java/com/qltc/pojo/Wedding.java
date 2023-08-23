@@ -30,7 +30,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "wedding")
-public class Weddings implements Serializable {
+public class Wedding implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -60,15 +60,15 @@ public class Weddings implements Serializable {
     @JoinColumn(name = "orderId", referencedColumnName = "id")
     @ManyToOne(optional = false)
     @Basic(optional = false)
-    private Orders orderId;
+    private Order orderId;
     @JoinColumn(name = "createdBy", referencedColumnName = "id")
     @ManyToOne(optional = false)
     @Basic(optional = false)
-    private Users userId;
+    private User userId;
     @JoinColumn(name = "customerId", referencedColumnName = "id")
     @ManyToOne(optional = false)
     @Basic(optional = false)
-    private Users customerId;
+    private User customerId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "weddingId")
-    private Set<WeddingPictures> weddingPicturesSet;
+    private Set<WeddingPicture> weddingPicturesSet;
 }

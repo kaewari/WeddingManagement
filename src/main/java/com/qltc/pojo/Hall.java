@@ -5,7 +5,6 @@
 package com.qltc.pojo;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -13,10 +12,10 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +27,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "halls")
-public class Halls implements Serializable {
+public class Hall implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,9 +41,12 @@ public class Halls implements Serializable {
     private String guestUpTo;
     @Basic(optional = false)
     private String description;
-    @Temporal(TemporalType.DATE)
-    private Date createdDate;
+    @Basic(optional = false)
+    private Boolean isActive;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hallId")
-    private Set<HallPrices> hallPriceSet;
+    private Set<HallPrice> hallPriceSet;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "userId", referencedColumnName = "id")
+    private User userId;
 
 }

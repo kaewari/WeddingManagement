@@ -25,7 +25,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "branches")
-public class Branches implements Serializable {
+public class Branch implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -47,5 +47,5 @@ public class Branches implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "branchId")
     private Set<DishesInBranch> dishesInBranchSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "branchId")
-    private Set<Employees> employeeSet;
+    private Set<Employee> employeeSet;
 }

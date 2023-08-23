@@ -30,18 +30,23 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "hall_price")
-public class HallPrices implements Serializable {
+public class HallPrice implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-
+    @Basic(optional = false)
+    private String period;
+    @Basic(optional = false)
+    private Long price;
+    @Basic(optional = false)
+    private Float discount;
     @Temporal(TemporalType.DATE)
     private Date createdDate;
     @JoinColumn(name = "hallId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private Halls hallId;
+    private Hall hallId;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hallPricesId")
-    private Set<OrderDetailsHalls> orderDetailsHallsSet;
+    private Set<OrderHallDetails> orderDetailsHallsSet;
 }

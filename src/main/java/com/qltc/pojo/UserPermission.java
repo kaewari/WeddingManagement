@@ -33,7 +33,7 @@ public class UserPermission implements Serializable {
     private Integer id;
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId", referencedColumnName = "id")
-    private Users userId;
+    private User userId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "permissionId", referencedColumnName = "id")
     private Permission permissionId;

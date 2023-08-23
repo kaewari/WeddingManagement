@@ -5,7 +5,6 @@
 package com.qltc.pojo;
 
 import java.io.Serializable;
-import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,8 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,8 +23,8 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "order_details_services")
-public class OrderDetailsServices implements Serializable {
+@Table(name = "order_services_details")
+public class OrderServiceDetails implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -40,11 +37,11 @@ public class OrderDetailsServices implements Serializable {
     private Long price;
     @Basic(optional = false)
     private Float discount;
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
+    @Basic(optional = false)
+    private String note;
     @JoinColumn(name = "orderId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
-    private Orders orderId;
+    private Order orderId;
     @JoinColumn(name = "servicePriceId", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private ServicePrice servicePriceId;

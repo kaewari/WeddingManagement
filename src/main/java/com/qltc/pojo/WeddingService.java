@@ -25,7 +25,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "service")
-public class WeddingServices implements Serializable {
+public class WeddingService implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
