@@ -13,11 +13,11 @@ import java.util.List;
  */
 public interface EmployeeRepository {
 
-    Employee getEmployeeById(Integer id);
+    Employee getEmployeeById(int id);
 
     List<Employee> getEmployees();
 
     boolean addOrUpdateEmployee(Employee e);
 
-    boolean deleteEmployee(Integer id);
+    boolean deleteEmployee(int id);
 }

@@ -32,23 +32,24 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getUserByName(String name) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("From User u Where u.name=:n");
+        Query q = s.createQuery("FROM User WHERE name=:n");
         q.setParameter("n", name);
 
         return (User) q.getSingleResult();
     }
 
     @Override
-    public User getUserById(Integer id) {
+    public User getUserById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("From User u Where u.id=:id");
+
+        Query q = s.createQuery("FROM User WHERE id=:id");
         q.setParameter("id", id);
 
         return (User) q.getSingleResult();
     }
 
     @Override
-    public Boolean deleteUserById(Integer id) {
+    public boolean deleteUserById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
         User p = this.getUserById(id);
         try {
@@ -69,7 +70,7 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Boolean updateUser(User u) {
+    public boolean updateUser(User u) {
         Session s = this.factory.getObject().getCurrentSession();
         try {
             if (u.getId() == null) {

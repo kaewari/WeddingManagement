@@ -6,9 +6,12 @@ package com.qltc.filters;
 
 import com.qltc.components.JwtService;
 import com.qltc.pojo.User;
+import com.qltc.pojo.UserPermission;
+import com.qltc.repository.UserPermissionRepository;
 import com.qltc.service.UserService;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,6 +38,8 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     private JwtService jwtService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserPermissionRepository userPermissionRepo;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -50,8 +55,11 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
                 boolean credentialsNonExpired = true;
                 boolean accountNonLocked = true;
 
+                List<UserPermission> userPermission = (List<UserPermission>) (UserPermission) this.userPermissionRepo.getPermissionsByUserId(user.getId());
                 Set<GrantedAuthority> authorities = new HashSet<>();
-                authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+                userPermission.forEach(u -> {
+                    authorities.add(new SimpleGrantedAuthority(u.toString()));
+                });
                 UserDetails userDetail = new org.springframework.security.core.userdetails.User(name, user.getPassword(), enabled, accountNonExpired,
                         credentialsNonExpired, accountNonLocked, authorities);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,

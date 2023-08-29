@@ -22,7 +22,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     EmployeeRepository employeeRepo;
 
     @Override
-    public Employee getEmployeeById(Integer id) {
+    public Employee getEmployeeById(int id) {
         return this.employeeRepo.getEmployeeById(id);
     }
 
@@ -37,7 +37,7 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public boolean deleteEmployee(Integer id) {
+    public boolean deleteEmployee(int id) {
         return this.employeeRepo.deleteEmployee(id);
     }
 

@@ -18,13 +18,13 @@ public interface UserService extends UserDetailsService {
 
     User getUserByName(String name);
 
-    User getUserById(Integer id);
+    User getUserById(int id);
 
     List<User> getUsers();
 
-    Boolean deleteUserById(Integer id);
+    boolean deleteUserById(int id);
 
-    Boolean updateUser(User u);
+    boolean updateUser(User u);
 
     boolean authUser(String name, String password);
 

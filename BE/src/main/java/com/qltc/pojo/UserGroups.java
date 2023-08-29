@@ -35,6 +35,4 @@ public class UserGroups implements Serializable {
     private Integer name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "groupId")
     private Set<UserInGroup> userInGroupSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "groupId")
-    private Set<UserGroupPermission> userGroupPermissionSet;
 }

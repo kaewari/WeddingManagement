@@ -74,27 +74,9 @@ public class User implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     @JsonIgnore
     private Set<Employee> employeeSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerId")
-    @JsonIgnore
-    private Set<Wedding> weddingCustomerSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    @JsonIgnore
-    private Set<Wedding> weddingUserSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customerId")
-    @JsonIgnore
-    private Set<CustomerFeedback> customerFeedBacksSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    @JsonIgnore
-    private Set<CustomerFeedback> userFeedBacksSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    @JsonIgnore
-    private Set<UserPermission> userPermissionSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     @JsonIgnore
     private Set<UserInGroup> userInGroupSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    @JsonIgnore
-    private Set<Hall> hallSet;
 
     @Override
     public int hashCode() {

@@ -8,6 +8,7 @@ import com.qltc.components.JwtService;
 import com.qltc.pojo.User;
 import com.qltc.service.UserService;
 import java.security.Principal;
+import java.util.List;
 import java.util.Map;
 import org.cloudinary.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -52,8 +54,8 @@ public class ApiUserController {
 
     @PostMapping("/test/")
     @CrossOrigin
-    public ResponseEntity<String> test(Principal pricipal) {
-        return new ResponseEntity<>(pricipal.getName(), HttpStatus.OK);
+    public ResponseEntity<String> test(Principal principal) {
+        return new ResponseEntity<>(principal.getName(), HttpStatus.OK);
     }
 
     @PostMapping(path = "/users/",
@@ -71,4 +73,46 @@ public class ApiUserController {
         User u = this.userService.getUserByName(pricipal.getName());
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
+
+    @RequestMapping(path = "/users/")
+    @CrossOrigin
+    public ResponseEntity<List<User>> getUsers() {
+        return new ResponseEntity<>(this.userService.getUsers(), HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/users/name/{name}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @CrossOrigin
+    public ResponseEntity<User> getUserByName(@PathVariable(value = "name") String name) {
+        return new ResponseEntity<>(this.userService.getUserByName(name), HttpStatus.OK);
+    }
+
+    @RequestMapping(path = "/users/id/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+    @CrossOrigin
+    public ResponseEntity<User> getUserById(@PathVariable(value = "id") int id) {
+        return new ResponseEntity<>(this.userService.getUserById(id), HttpStatus.OK);
+    }
+//
+//    @RequestMapping(path = "/users/id/{id}", produces = {MediaType.APPLICATION_JSON_VALUE})
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    @CrossOrigin
+//    public void deleteUserById(@PathVariable(value = "id") int id) {
+//        this.userService.deleteUserById(id);
+//    }
+//
+//    @PostMapping(path = "/users/", consumes = {
+//        MediaType.MULTIPART_FORM_DATA_VALUE,
+//        MediaType.APPLICATION_JSON_VALUE
+//    })
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public void add(@RequestParam Map<String, String> params, @RequestPart MultipartFile[] file) {
+//        User u = new User();
+//        u.setName(params.get("name"));
+//        u.setAddress(params.get("description"));
+//        u.setEmail(Long.parseLong(params.get("price")));
+//        u.setCategoryId(this.cateService.getCateById(Integer.parseInt(params.get("categoryId"))));
+//        if (file.length > 0) {
+//            u.setFile(file[0]);
+//        }
+//        this.userService.addUser(u);
+//    }
 }

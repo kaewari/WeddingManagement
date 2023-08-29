@@ -47,8 +47,5 @@ public class Branch implements Serializable {
     private Boolean isActive;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "branchId")
     @JsonIgnore
-    private Set<DishesInBranch> dishesInBranchSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "branchId")
-    @JsonIgnore
     private Set<Employee> employeeSet;
 }

@@ -38,6 +38,4 @@ public class Permission implements Serializable {
     private Boolean allow;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "permissionId")
     private Set<UserPermission> userPermissionSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "permissionId")
-    private Set<UserGroupPermission> userGroupPermissionSet;
 }

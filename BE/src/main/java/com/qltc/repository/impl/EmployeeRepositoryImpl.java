@@ -27,7 +27,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     private LocalSessionFactoryBean factory;
 
     @Override
-    public Employee getEmployeeById(Integer id) {
+    public Employee getEmployeeById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createQuery("From Employee e Where e.id=:id");
         q.setParameter("id", id);
@@ -61,7 +61,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
     }
 
     @Override
-    public boolean deleteEmployee(Integer id) {
+    public boolean deleteEmployee(int id) {
         Session s = this.factory.getObject().getCurrentSession();
         Employee p = this.getEmployeeById(id);
         try {

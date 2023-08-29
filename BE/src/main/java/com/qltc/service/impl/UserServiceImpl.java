@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
     private Cloudinary cloudinary;
 
     @Override
-    public User getUserById(Integer id) {
+    public User getUserById(int id) {
         return this.userRepo.getUserById(id);
     }
 
@@ -51,12 +51,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean deleteUserById(Integer id) {
+    public boolean deleteUserById(int id) {
         return this.userRepo.deleteUserById(id);
     }
 
     @Override
-    public Boolean updateUser(User u) {
+    public boolean updateUser(User u) {
         if (!u.getFile().isEmpty()) {
             try {
                 Map res = this.cloudinary.uploader().upload(u.getFile().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
