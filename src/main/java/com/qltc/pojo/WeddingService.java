@@ -17,8 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.Data;
 
-
-@Entity @Data
+@Entity
+@Data
 @Table(name = "wedding_services")
 public class WeddingService implements Serializable {
 

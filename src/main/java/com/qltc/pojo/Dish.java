@@ -3,6 +3,7 @@ package com.qltc.pojo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.HashSet;
+
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;

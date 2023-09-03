@@ -2,6 +2,7 @@ package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
+
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Basic;
@@ -17,7 +18,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Data;
-
 
 @Entity
 @Data
