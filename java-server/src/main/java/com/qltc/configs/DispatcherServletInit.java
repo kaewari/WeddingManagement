@@ -2,13 +2,18 @@ package com.qltc.configs;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
+/**
+ *
+ * @author sonho
+ */
 public class DispatcherServletInit extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
         return new Class[]{
-            HibernateConfig.class
-        };
+            HibernateConfig.class,
+            SpringSecurityConfig.class,
+            JwtSecurityConfig.class};
     }
 
     @Override

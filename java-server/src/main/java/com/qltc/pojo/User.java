@@ -1,102 +1,64 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.qltc.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import lombok.Data;
+import javax.persistence.Transient;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
+/**
+ *
+ * @author sonho
+ */
+@Getter
+@Setter
 @Entity
-@Data
 @Table(name = "users")
+@JsonIgnoreProperties({"file", "employeeSet", "userInGroupSet"})
 public class User implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-    
     @Basic(optional = false)
     private String name;
-    
+    @Basic(optional = false)
     private String email;
-    
+    @Basic(optional = false)
     private String phone;
-    
-    @JsonIgnore
     @Basic(optional = false)
     private String password;
-    
-    @Column(nullable = true)
+    @Basic(optional = false)
     private String identityNumber;
-    
-    @Column(nullable = true)
+    @Basic(optional = false)
     private String address;
-    
     private String avatar;
-    
-    @Basic(optional = false)
-    private Boolean isActive = true;
-    
-    @Basic(optional = false)
+    private Boolean isActive;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate = new Date();
-    
-    @JsonIgnore
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
-    private Employee employee;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
-    private Set<Order> orders;
-    
-    @JsonIgnore
-    @OneToMany(mappedBy = "staff")
-    private Set<Order> ordersByStaff;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
-    private Set<Wedding> weddings;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<Wedding> weddingContracts;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer", orphanRemoval = true)
-    private Set<CustomerFeedback> feedbacks;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<CustomerFeedback> repliedFeedbacks;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
-    private Set<UserPermission> userHasPermissions;
-   
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user", orphanRemoval = true)
-    private Set<UserInGroup> userInGroups;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<Hall> hallsHaveModified;
-    
-    @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
-    private Set<WeddingService> weddingServicesHaveModified;
+    private Date createdDate;
+    @Transient
+    private MultipartFile file;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private Set<Employee> employeeSet;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    private Set<UserInGroup> userInGroupSet;
+
 }
