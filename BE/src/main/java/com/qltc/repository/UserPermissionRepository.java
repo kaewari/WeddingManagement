@@ -13,15 +13,15 @@ import java.util.List;
  */
 public interface UserPermissionRepository {
 
-    Permission getPermissionById(Integer id);
+    Permission getPermissionById(int id);
 
-    List<Permission> getPermissionsByUserId(Integer userId);
+    List<Permission> getPermissionsByUserId(int userId);
 
     Boolean addOrUpdatePermissionsByUserId();
 
-    Boolean deleteUserPermissionById(Integer id);
+    Boolean deleteUserPermissionById(int id);
 
-    Boolean deleteUserPermissionsByUserId(Integer userId);
+    Boolean deleteUserPermissionsByUserId(int userId);
 
-    Boolean deleteUserPermissionsByPermissionId(Integer permissionId);
+    Boolean deleteUserPermissionsByPermissionId(int permissionId);
 }

@@ -6,12 +6,10 @@ package com.qltc.filters;
 
 import com.qltc.components.JwtService;
 import com.qltc.pojo.User;
-import com.qltc.pojo.UserPermission;
 import com.qltc.repository.UserPermissionRepository;
 import com.qltc.service.UserService;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -40,8 +38,11 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     private UserService userService;
     @Autowired
     private UserPermissionRepository userPermissionRepo;
+//    @Autowired
+//    private UsersGroupService usersGroupService;
 
     @Override
+    @SuppressWarnings("empty-statement")
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -54,12 +55,13 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
                 boolean accountNonExpired = true;
                 boolean credentialsNonExpired = true;
                 boolean accountNonLocked = true;
-
-                List<UserPermission> userPermission = (List<UserPermission>) (UserPermission) this.userPermissionRepo.getPermissionsByUserId(user.getId());
+                Object[] permissions = this.userPermissionRepo.getPermissionsByUserId(user.getId()).toArray();
                 Set<GrantedAuthority> authorities = new HashSet<>();
-                userPermission.forEach(u -> {
-                    authorities.add(new SimpleGrantedAuthority(u.toString()));
-                });
+                for (Object permission : permissions) {
+                    authorities.add(new SimpleGrantedAuthority(permission.toString()));
+                }
+//                Set<GrantedAuthority> authorities = new HashSet<>();
+//                authorities.add(new SimpleGrantedAuthority("USER"));
                 UserDetails userDetail = new org.springframework.security.core.userdetails.User(name, user.getPassword(), enabled, accountNonExpired,
                         credentialsNonExpired, accountNonLocked, authorities);
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetail,

@@ -10,8 +10,10 @@ import java.util.List;
 /**
  *
  * @author sonho
+ * @param <T>
+ * @param <V>
  */
-public interface UserRepository {
+public interface UserRepository<T, V> {
 
     User getUserByName(String name);
 
@@ -26,4 +28,6 @@ public interface UserRepository {
     boolean authUser(String name, String password);
 
     User addUser(User user);
+
+    boolean findUserInfo(T key, V value);
 }

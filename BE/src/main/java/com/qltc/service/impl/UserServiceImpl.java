@@ -12,6 +12,7 @@ import com.qltc.repository.UserPermissionRepository;
 import com.qltc.repository.UserRepository;
 import com.qltc.service.UserService;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,6 +41,8 @@ public class UserServiceImpl implements UserService {
     private UserPermissionRepository userPermissionRepo;
     @Autowired
     private Cloudinary cloudinary;
+    @Autowired
+    private BCryptPasswordEncoder passEncoder;
 
     @Override
     public User getUserById(int id) {
@@ -57,14 +61,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUser(User u) {
-        if (!u.getFile().isEmpty()) {
+        if (u.getFile() != null) {
             try {
-                Map res = this.cloudinary.uploader().upload(u.getFile().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
+                Map res = this.cloudinary.uploader().upload(u.getFile().getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
                 u.setAvatar(res.get("secure_url").toString());
             } catch (IOException ex) {
                 Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+
         return this.userRepo.updateUser(u);
     }
 
@@ -74,8 +80,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(Map<String, String> params, MultipartFile avatar) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public User addUser(User u, MultipartFile file) {
+        User user = new User();
+        user.setAddress(u.getAddress());
+        user.setPhone(u.getPhone());
+        user.setEmail(u.getEmail());
+        user.setName(u.getName());
+        user.setPassword(this.passEncoder.encode(u.getPassword()));
+        user.setIdentityNumber(u.getIdentityNumber());
+        user.setIsActive(false);
+        user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+        if (file != null) {
+            try {
+                Map res = this.cloudinary.uploader().upload(file.getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                user.setAvatar(res.get("secure_url").toString());
+            } catch (IOException ex) {
+                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return this.userRepo.addUser(user);
     }
 
     @Override
@@ -99,4 +124,8 @@ public class UserServiceImpl implements UserService {
                 user.getName(), user.getPassword(), authorities);
     }
 
+    @Override
+    public boolean findUserInfo(Object key, Object value) {
+        return this.userRepo.findUserInfo(key, value);
+    }
 }

@@ -34,7 +34,7 @@ public class UserGroupPermission implements Serializable {
     private Integer id;
     @ManyToOne(optional = false)
     @JoinColumn(name = "groupId", referencedColumnName = "id")
-    private UserGroups groupId;
+    private UsersGroup groupId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "permissionId", referencedColumnName = "id")
     private Permission permissionId;

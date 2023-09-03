@@ -4,6 +4,7 @@
  */
 package com.qltc.service.impl;
 
+import com.qltc.pojo.Branch;
 import com.qltc.pojo.Employee;
 import com.qltc.repository.EmployeeRepository;
 import com.qltc.service.EmployeeService;
@@ -32,8 +33,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public boolean addOrUpdateEmployee(Employee e) {
-        return this.employeeRepo.addOrUpdateEmployee(e);
+    public Employee addEmployee(Employee e) {
+        return this.employeeRepo.addEmployee(e);
     }
 
     @Override
@@ -41,4 +42,23 @@ public class EmployeeServiceImpl implements EmployeeService {
         return this.employeeRepo.deleteEmployee(id);
     }
 
+    @Override
+    public boolean updateEmployee(Employee e) {
+        return this.employeeRepo.updateEmployee(e);
+    }
+
+    @Override
+    public Employee getEmployeeByUserId(int userId) {
+        return this.employeeRepo.getEmployeeByUserId(userId);
+    }
+
+    @Override
+    public Employee getEmployeeByIdentityNumber(String identityNumber) {
+        return this.employeeRepo.getEmployeeByIdentityNumber(identityNumber);
+    }
+
+    @Override
+    public Branch getEmployeeByBranchId(int id) {
+        return this.employeeRepo.getEmployeeByBranchId(id);
+    }
 }

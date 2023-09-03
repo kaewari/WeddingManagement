@@ -6,17 +6,20 @@ package com.qltc.service;
 
 import com.qltc.pojo.User;
 import java.util.List;
-import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author sonho
+ * @param <T>
+ * @param <V>
  */
-public interface UserService extends UserDetailsService {
+public interface UserService<T, V> extends UserDetailsService {
 
     User getUserByName(String name);
+
+    boolean findUserInfo(T key, V value);
 
     User getUserById(int id);
 
@@ -28,5 +31,5 @@ public interface UserService extends UserDetailsService {
 
     boolean authUser(String name, String password);
 
-    User addUser(Map<String, String> params, MultipartFile avatar);
+    User addUser(User user, MultipartFile file);
 }

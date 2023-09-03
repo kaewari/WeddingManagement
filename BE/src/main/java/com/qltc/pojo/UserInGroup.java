@@ -35,5 +35,5 @@ public class UserInGroup implements Serializable {
     private User userId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "groupId", referencedColumnName = "id")
-    private UserGroups groupId;
+    private UsersGroup groupId;
 }

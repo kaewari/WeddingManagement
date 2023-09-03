@@ -25,7 +25,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "user_groups")
-public class UserGroups implements Serializable {
+public class UsersGroup implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

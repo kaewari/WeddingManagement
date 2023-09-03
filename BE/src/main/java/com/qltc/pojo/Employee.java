@@ -6,6 +6,7 @@ package com.qltc.pojo;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,7 +14,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +26,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@XmlRootElement
 @Table(name = "employees")
 public class Employee implements Serializable {
 
@@ -34,10 +35,15 @@ public class Employee implements Serializable {
     @Basic(optional = false)
     private Integer id;
     @Basic(optional = false)
+    @NotNull(message = "{employee.firstName.notNull}")
+    @Size(min = 1, max = 10, message = "{employee.firstName.lenErr}")
     private String firstName;
     @Basic(optional = false)
+    @NotNull(message = "{employee.lastName.notNull}")
+    @Size(min = 1, max = 10, message = "{employee.lastName.lenErr}")
     private String lastName;
     @Basic(optional = false)
+    @Column(unique = true)
     private String identityNumber;
     @Basic(optional = false)
     private String position;

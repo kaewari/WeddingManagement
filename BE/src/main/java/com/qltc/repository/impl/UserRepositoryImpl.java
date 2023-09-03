@@ -7,6 +7,7 @@ package com.qltc.repository.impl;
 import com.qltc.pojo.User;
 import com.qltc.repository.UserRepository;
 import java.util.List;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -34,17 +35,14 @@ public class UserRepositoryImpl implements UserRepository {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createQuery("FROM User WHERE name=:n");
         q.setParameter("n", name);
-
         return (User) q.getSingleResult();
     }
 
     @Override
     public User getUserById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-
         Query q = s.createQuery("FROM User WHERE id=:id");
         q.setParameter("id", id);
-
         return (User) q.getSingleResult();
     }
 
@@ -56,7 +54,6 @@ public class UserRepositoryImpl implements UserRepository {
             s.delete(p);
             return true;
         } catch (HibernateException ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -65,7 +62,6 @@ public class UserRepositoryImpl implements UserRepository {
     public List<User> getUsers() {
         Session s = this.factory.getObject().getCurrentSession();
         Query q = s.createQuery("From User");
-
         return q.getResultList();
     }
 
@@ -73,15 +69,9 @@ public class UserRepositoryImpl implements UserRepository {
     public boolean updateUser(User u) {
         Session s = this.factory.getObject().getCurrentSession();
         try {
-            if (u.getId() == null) {
-                s.save(u);
-            } else {
-                s.update(u);
-            }
-
+            s.update(u);
             return true;
         } catch (HibernateException ex) {
-            ex.printStackTrace();
             return false;
         }
     }
@@ -93,8 +83,22 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User addUser(User user) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public User addUser(User u) {
+        Session s = this.factory.getObject().getCurrentSession();
+        s.save(u);
+        return u;
     }
 
+    @Override
+    public boolean findUserInfo(Object key, Object value) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query q = s.createQuery("SELECT 1 FROM User WHERE " + key + "=:value");
+        q.setParameter("value", value);
+        try {
+            q.getSingleResult();
+            return true;
+        } catch (NoResultException nre) {
+            return false;
+        }
+    }
 }

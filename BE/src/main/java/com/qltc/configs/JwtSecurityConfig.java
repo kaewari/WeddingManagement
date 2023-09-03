@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableWebSecurity
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
-    "com.qltc.controllers",
+    "com.qltc.controller",
     "com.qltc.repository",
     "com.qltc.service",
     "com.qltc.components"})
@@ -61,15 +61,28 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().ignoringAntMatchers("/api/**");
-        http.authorizeRequests().antMatchers("/api/login/").permitAll();
-        http.authorizeRequests().antMatchers("/api/users/").hasAnyRole("ROLE_ADMIN", "ROLE_USER");
-        http.authorizeRequests().antMatchers("/api/employees/").hasAnyRole("ROLE_ADMIN", "ROLE_USER");
-        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/**/comments/").permitAll();
+        http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/login/").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/users/").hasAuthority("VIEW_LIST_USER")
+                .antMatchers(HttpMethod.GET, "/api/users/id/**").hasAuthority("VIEW_USER_BY_ID")
+                .antMatchers(HttpMethod.GET, "/api/users/name/**").hasAuthority("VIEW_USER_BY_NAME")
+                .antMatchers(HttpMethod.POST, "/api/user/").hasAuthority("ADD_USER")
+                .antMatchers(HttpMethod.POST, "/api/users/update/**").hasAuthority("UPDATE_USER")
+                .antMatchers(HttpMethod.DELETE, "/api/users/delete/**").hasAuthority("DELETE_USER")
+                .antMatchers(HttpMethod.GET, "/api/employees/").hasAuthority("VIEW_LIST_EMPLOYEE")
+                .antMatchers(HttpMethod.GET, "/api/employees/id/**").hasAuthority("VIEW_USER_BY_ID")
+                .antMatchers(HttpMethod.GET, "/api/employees/identity/**").hasAuthority("VIEW_EMPLOYEE_BY_IDENTITY_NUMBER")
+                .antMatchers(HttpMethod.POST, "/api/employees/").hasAuthority("ADD_EMPLOYEE")
+                .antMatchers(HttpMethod.POST, "/api/employees/update/**").hasAuthority("UPDATE_EMPLOYEE")
+                .antMatchers(HttpMethod.DELETE, "/api/employees/delete/**").hasAuthority("DELETE_EMPLOYEE")
+                .antMatchers(HttpMethod.GET, "/api/test/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/current-user/").authenticated()
+                .antMatchers(HttpMethod.GET, "/api/**/comments/").permitAll();
         http.antMatcher("/api/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-                .antMatchers(HttpMethod.POST, "/api/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
-                .antMatchers(HttpMethod.DELETE, "/api/**").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')").and()
+                .antMatchers(HttpMethod.GET, "/api/**").access("hasRole('ADMIN') or hasRole('USER')")
+                .antMatchers(HttpMethod.POST, "/api/**").access("hasRole('ADMIN') or hasRole('USER')")
+                .antMatchers(HttpMethod.DELETE, "/api/**").access("hasRole('ADMIN') or hasRole('USER')").and()
                 .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
     }

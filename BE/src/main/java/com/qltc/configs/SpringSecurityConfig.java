@@ -7,6 +7,7 @@ package com.qltc.configs;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import java.text.SimpleDateFormat;
+import org.cloudinary.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -31,7 +32,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = {
     "com.qltc.controller",
     "com.qltc.repository",
-    "com.qltc.service"
+    "com.qltc.service",
+    "com.qltc.validator"
 })
 @Order(2)
 public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -67,12 +69,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.logout().logoutSuccessUrl("/login");
         http.exceptionHandling()
                 .accessDeniedPage("/login?accessDenied");
-
-//        http.authorizeRequests().antMatchers("/").permitAll()
-//                .antMatchers("/**/add")
-//                .access("hasRole('ROLE_ADMIN')");
-//        .antMatchers("/**/pay")
-//                .access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
         http.csrf().disable();
     }
 
@@ -81,10 +77,15 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         Cloudinary cloudinary
                 = new Cloudinary(ObjectUtils.asMap(
                         "cloud_name", this.env.getProperty("cloudinary.cloud_name"),
-                        "api_key", this.env.getProperty("cloudinary.api_id"),
+                        "api_key", this.env.getProperty("cloudinary.api_key"),
                         "api_secret", this.env.getProperty("cloudinary.api_secret"),
                         "secure", true));
         return cloudinary;
+    }
+
+    @Bean
+    public JSONObject message() {
+        return new JSONObject();
     }
 
     @Bean

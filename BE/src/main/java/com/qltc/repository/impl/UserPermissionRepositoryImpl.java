@@ -26,25 +26,11 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
     private LocalSessionFactoryBean factory;
 
     @Override
-    public List<Permission> getPermissionsByUserId(Integer userId) {
-        Session session = this.factory.getObject().getCurrentSession();
-//        CriteriaBuilder builder = session.getCriteriaBuilder();
-//        CriteriaQuery<UserPermission> qUserPermission = builder.createQuery(UserPermission.class);
-//        CriteriaQuery<Permission> qPermission = builder.createQuery(Permission.class);
-//        Root<UserPermission> rootUserPermission = qUserPermission.from(UserPermission.class);
-//        Root<Permission> rootPermission = qPermission.from(Permission.class);
-//        qUserPermission.select(rootUserPermission).where(rootUserPermission.get("userId").in(userId));
-//        qPermission.select(rootPermission).where(rootPermission.in(qUserPermission));
-//        Query query = session.createQuery(qUserPermission);
-        Query query = session.createQuery(
-                "Select p.* "
-                + "From Permission p "
-                + "Where p.id in "
-                + "(Select e.id "
-                + "From UserPermission e "
-                + "Where e.userId=:id)");
-        query.setParameter("id", userId);
-
+    public List<Permission> getPermissionsByUserId(int userId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String queryString = "Select p.value From permissions p Where p.id in (Select e.id From user_permission e Where e.userId=?1) and p.allow = 1";
+        Query query = s.createNativeQuery(queryString);
+        query.setParameter(1, userId);
         return query.getResultList();
     }
 
@@ -54,22 +40,22 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
     }
 
     @Override
-    public Boolean deleteUserPermissionById(Integer id) {
+    public Boolean deleteUserPermissionById(int id) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Boolean deleteUserPermissionsByUserId(Integer userId) {
+    public Boolean deleteUserPermissionsByUserId(int userId) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Boolean deleteUserPermissionsByPermissionId(Integer permissionId) {
+    public Boolean deleteUserPermissionsByPermissionId(int permissionId) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
     @Override
-    public Permission getPermissionById(Integer id) {
+    public Permission getPermissionById(int id) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
