@@ -1,11 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.configs;
 
 import java.util.Properties;
 import javax.sql.DataSource;
+import org.hibernate.cfg.AvailableSettings;
 import static org.hibernate.cfg.AvailableSettings.DIALECT;
 import static org.hibernate.cfg.AvailableSettings.SHOW_SQL;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +14,7 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
-/**
- *
- * @author admin
- */
+
 @Configuration
 @PropertySource("classpath:databases.properties")
 public class HibernateConfig {
@@ -58,6 +52,8 @@ public class HibernateConfig {
         Properties props = new Properties();
         props.put(DIALECT, env.getProperty("hibernate.dialect"));
         props.put(SHOW_SQL, env.getProperty("hibernate.showSql"));
+        props.put(AvailableSettings.ENABLE_LAZY_LOAD_NO_TRANS, 
+                env.getProperty("hibernate.enableLazyLoadNoTrans"));
         return props;
     }
 
