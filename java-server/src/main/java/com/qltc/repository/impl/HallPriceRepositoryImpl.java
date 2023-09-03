@@ -1,7 +1,7 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.HallPrice;
-import com.qltc.repositories.HallPriceRepository;
+import com.qltc.repository.HallPriceRepository;
 import java.util.List;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 public class HallPriceRepositoryImpl implements HallPriceRepository {
-    
+
     @Autowired
     LocalSessionFactoryBean sessionFactory;
 
@@ -30,7 +30,7 @@ public class HallPriceRepositoryImpl implements HallPriceRepository {
         Session session = sessionFactory.getObject().getCurrentSession();
         return session.get(HallPrice.class, id);
     }
-    
+
     @Override
     public HallPrice findByPeriod(String period) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -48,7 +48,7 @@ public class HallPriceRepositoryImpl implements HallPriceRepository {
         query.setParameter(0, fromPrice);
         query.setParameter(1, toPrice);
         return query.getResultList();
-        
+
     }
 
     @Override
@@ -91,5 +91,5 @@ public class HallPriceRepositoryImpl implements HallPriceRepository {
             return false;
         }
     }
-    
+
 }

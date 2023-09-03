@@ -1,7 +1,7 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.Branch;
-import com.qltc.repositories.BranchRepository;
+import com.qltc.repository.BranchRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,14 +17,12 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Repository
 @Transactional
 public class BranchRepositoryImpl implements BranchRepository {
-    
+
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
-    
 
     @Override
     public List<Branch> findAll(boolean isActive) {
@@ -43,15 +41,15 @@ public class BranchRepositoryImpl implements BranchRepository {
     @Override
     // find({"province"="string", "district"="string", "ward"="string", "quarter":"string"
     // "houseNumber="String", "inactive":"boolean"})
-    public List<Branch> find(Map<String, Object> findArgs) { 
+    public List<Branch> find(Map<String, Object> findArgs) {
         Session session = sessionFactory.getObject().getCurrentSession();
         if (session != null) {
             CriteriaBuilder builder = session.getCriteriaBuilder();
             CriteriaQuery query = builder.createQuery();
             Root<Branch> root = query.from(Branch.class);
-            
+
             List<Predicate> predicates = new ArrayList<>();
-            
+
             String province = (String) findArgs.get("province");
             if (province != null && !province.isEmpty()) {
                 predicates.add(builder.like(root.get("province"), String.format("%%%s%%", province)));
@@ -76,11 +74,11 @@ public class BranchRepositoryImpl implements BranchRepository {
             if (inactive != null) {
                 predicates.add(builder.equal(root.get("isActive"), inactive));
             }
-            
-            query.select(root).where(predicates.toArray(new Predicate[] {}));
-            
+
+            query.select(root).where(predicates.toArray(new Predicate[]{}));
+
             Query q = session.createQuery(query);
-            
+
             if (findArgs.get("pageIndex") != null && findArgs.get("pageSize") != null) {
                 int pageIndex = (Integer) findArgs.get("pageIndex");
                 int pageSize = (Integer) findArgs.get("pageSize");
@@ -90,7 +88,7 @@ public class BranchRepositoryImpl implements BranchRepository {
             return q.getResultList();
         }
         return null;
-    } 
+    }
 
     @Override
     public boolean addOrUpdateBranch(Branch branch) {
@@ -116,7 +114,8 @@ public class BranchRepositoryImpl implements BranchRepository {
                 branch.setIsActive(isActive);
                 session.update(branch);
                 return true;
-            } catch (HibernateException e) {}
+            } catch (HibernateException e) {
+            }
         }
         return false;
     }
@@ -129,11 +128,12 @@ public class BranchRepositoryImpl implements BranchRepository {
                 branch.setIsActive(isActive);
                 session.update(branch);
                 return true;
-            } catch (HibernateException e) {}
+            } catch (HibernateException e) {
+            }
         }
         return false;
     }
-        
+
     @Override
     public boolean deleteBranchById(int id) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -151,5 +151,5 @@ public class BranchRepositoryImpl implements BranchRepository {
     public boolean deleteBranch(Branch branch) {
         return deleteBranchById(branch.getId());
     }
-        
+
 }

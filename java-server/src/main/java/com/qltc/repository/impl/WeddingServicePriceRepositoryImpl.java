@@ -1,7 +1,7 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.WeddingServicePrice;
-import com.qltc.repositories.WeddingServicePriceRepository;
+import com.qltc.repository.WeddingServicePriceRepository;
 import java.util.List;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class WeddingServicePriceRepositoryImpl implements WeddingServicePriceRepository{
-    
+public class WeddingServicePriceRepositoryImpl implements WeddingServicePriceRepository {
+
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
 
@@ -55,8 +55,7 @@ public class WeddingServicePriceRepositoryImpl implements WeddingServicePriceRep
                 existing.setIsAvailable(isAvailable);
                 session.update(existing);
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         } catch (HibernateException e) {
@@ -92,5 +91,5 @@ public class WeddingServicePriceRepositoryImpl implements WeddingServicePriceRep
             return false;
         }
     }
-    
+
 }

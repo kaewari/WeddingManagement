@@ -1,4 +1,4 @@
-package com.qltc.services;
+package com.qltc.service;
 
 public interface OrderService {
     //add dish

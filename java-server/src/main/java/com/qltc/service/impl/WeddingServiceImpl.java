@@ -1,30 +1,30 @@
-package com.qltc.services.impl;
+package com.qltc.service.impl;
 
 import com.qltc.pojo.Wedding;
 import com.qltc.pojo.WeddingPicture;
 import com.qltc.pojo.WeddingServicePrice;
-import com.qltc.repositories.WeddingPictureRepository;
-import com.qltc.repositories.WeddingRepository;
-import com.qltc.repositories.WeddingServicePriceRepository;
-import com.qltc.repositories.WeddingServiceRepository;
-import com.qltc.services.WeddingService;
+import com.qltc.repository.WeddingPictureRepository;
+import com.qltc.repository.WeddingRepository;
+import com.qltc.repository.WeddingServicePriceRepository;
+import com.qltc.repository.WeddingServiceRepository;
+import com.qltc.service.WeddingService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class WeddingServiceImpl implements WeddingService{
-    
+public class WeddingServiceImpl implements WeddingService {
+
     @Autowired
     private WeddingRepository weddingRepo;
-    
+
     @Autowired
     private WeddingServiceRepository weddingServiceRepo;
-    
+
     @Autowired
     private WeddingServicePriceRepository priceRepo;
-    
+
     @Autowired
     private WeddingPictureRepository weddingPictureRepo;
 
@@ -32,9 +32,9 @@ public class WeddingServiceImpl implements WeddingService{
     public List<Wedding> findAllWeddings() {
         return weddingRepo.findAll();
     }
-    
+
     @Override
-    public List<Wedding> findWeddings(Map<String, Object> findArgs){
+    public List<Wedding> findWeddings(Map<String, Object> findArgs) {
         return weddingRepo.find(findArgs);
     }
 
@@ -57,7 +57,7 @@ public class WeddingServiceImpl implements WeddingService{
     public com.qltc.pojo.WeddingService findWeddingServiceById(int id) {
         return weddingServiceRepo.findById(id);
     }
-    
+
     @Override
     public WeddingServicePrice getWeddingServicePriceById(int id) {
         return priceRepo.findById(id);
@@ -75,14 +75,14 @@ public class WeddingServiceImpl implements WeddingService{
 
     @Override
     public List<WeddingPicture> findWeddingPictureOfWedding(int id) {
-        return weddingPictureRepo.findByWeddingId(id);    
+        return weddingPictureRepo.findByWeddingId(id);
     }
 
     @Override
     public boolean addOrUpdateWeddingService(com.qltc.pojo.WeddingService service) {
         return weddingServiceRepo.addOrUpdate(service);
     }
-    
+
     @Override
     public com.qltc.pojo.WeddingService addPriceToService(com.qltc.pojo.WeddingService service, List<WeddingServicePrice> prices) {
         if (weddingServiceRepo.addPriceToService(service, prices)) {
@@ -91,12 +91,12 @@ public class WeddingServiceImpl implements WeddingService{
             return null;
         }
     }
-    
+
     @Override
     public boolean addPictureToWedding(Wedding wedding, WeddingPicture picture) {
         return weddingRepo.addPictureToWedding(wedding, picture);
     }
-    
+
     @Override
     public boolean deleteWeddingServiceById(int id) {
         return weddingServiceRepo.deleteById(id);
@@ -106,38 +106,42 @@ public class WeddingServiceImpl implements WeddingService{
     public WeddingServicePrice findWeddingServicePriceById(int id) {
         return priceRepo.findById(id);
     }
-    
+
     @Override
     public boolean addOrUpdateWeddingServicePrice(WeddingServicePrice servicePrice) {
         return priceRepo.addOrUpdate(servicePrice);
     }
-    
+
     @Override
     public boolean deleteWeddingServicePriceById(int id) {
         return priceRepo.deleteById(id);
     }
-    
+
     @Override
     public boolean deactiveWeddingServiceById(int id) {
         com.qltc.pojo.WeddingService existing = weddingServiceRepo.findById(id);
-        if (existing == null) return false;
+        if (existing == null) {
+            return false;
+        }
         existing.setIsAvailable(false);
         return weddingServiceRepo.addOrUpdate(existing);
     }
-    
+
     @Override
     public boolean activeWeddingServiceById(int id) {
         com.qltc.pojo.WeddingService existing = weddingServiceRepo.findById(id);
-        if (existing == null) return false;
+        if (existing == null) {
+            return false;
+        }
         existing.setIsAvailable(true);
         return weddingServiceRepo.addOrUpdate(existing);
     }
-    
+
     @Override
     public boolean deactiveWeddingServicePriceById(int id) {
         return priceRepo.deactivateOrActivateById(id, false);
     }
-    
+
     @Override
     public boolean activeWeddingServicePriceById(int id) {
         return priceRepo.deactivateOrActivateById(id, true);
@@ -157,5 +161,5 @@ public class WeddingServiceImpl implements WeddingService{
     public boolean deleteWeddingById(int weddingId) {
         return weddingRepo.deleteById(weddingId);
     }
-    
+
 }

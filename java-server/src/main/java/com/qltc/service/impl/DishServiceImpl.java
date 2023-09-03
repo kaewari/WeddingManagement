@@ -1,9 +1,9 @@
-package com.qltc.services.impl;
+package com.qltc.service.impl;
 
 import com.qltc.pojo.Branch;
 import com.qltc.pojo.Dish;
-import com.qltc.repositories.DishRepository;
-import com.qltc.services.DishService;
+import com.qltc.repository.DishRepository;
+import com.qltc.service.DishService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class DishServiceImpl implements DishService {
-    
+
     @Autowired
     private DishRepository dishRepo;
 
@@ -20,7 +20,7 @@ public class DishServiceImpl implements DishService {
     public List<Dish> findAll() {
         return dishRepo.findAll();
     }
-    
+
     @Override
     public List<Dish> findAllDishesInBranchId(int branchId) {
         return dishRepo.findAllInBranchId(branchId);
@@ -35,11 +35,14 @@ public class DishServiceImpl implements DishService {
     public List<Dish> find(Map<String, Object> findArgs) {
         return dishRepo.find(findArgs);
     }
-    
+
     @Override
     public List<Dish> findAllDishesRestaurantServes() {
-        return dishRepo.find(new HashMap<String, Object> ()
-                {{ put("weddingOnly", false); }}
+        return dishRepo.find(new HashMap<String, Object>() {
+            {
+                put("weddingOnly", false);
+            }
+        }
         );
     }
 
@@ -60,7 +63,7 @@ public class DishServiceImpl implements DishService {
         dish.setIsAvailable(false);
         return dishRepo.addOrUpdateDish(dish);
     }
-    
+
     @Override
     public boolean activateDishById(int id) {
         Dish dish = dishRepo.findById(id);
@@ -93,13 +96,13 @@ public class DishServiceImpl implements DishService {
     public boolean removeDishFromBranch(Dish dish, Branch branch) {
         return dishRepo.removeDishFromBranch(dish, branch);
     }
-    
+
     @Override
     public boolean unServeDishInBranch(Dish dish, Branch branch) {
         return dishRepo.setAvailableForDishInBranch(dish, branch, false);
     }
-    
-    @Override    
+
+    @Override
     public boolean reServeDishInBranch(Dish dish, Branch branch) {
         return dishRepo.setAvailableForDishInBranch(dish, branch, true);
     }

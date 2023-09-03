@@ -1,11 +1,10 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.Branch;
 import com.qltc.pojo.Dish;
 import com.qltc.pojo.DishInBranch;
-import com.qltc.repositories.DishRepository;
+import com.qltc.repository.DishRepository;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,14 +23,13 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Repository
 @Transactional
-public class DishRepositoryImpl implements DishRepository{
-    
+public class DishRepositoryImpl implements DishRepository {
+
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
-    
+
     @Autowired
     private Environment env;
 
@@ -55,35 +53,33 @@ public class DishRepositoryImpl implements DishRepository{
         CriteriaBuilder ctrBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Dish> queryBuilder = ctrBuilder.createQuery(Dish.class);
         Root root = queryBuilder.from(Dish.class);
-        
-        
+
         List<Predicate> predicates = new ArrayList<>();
-        
+
         String keyword = (String) findArgs.get("keyword");
         if (keyword != null && !keyword.isEmpty()) {
             predicates.add(ctrBuilder.like(root.get("name"), String.format("%%%s%%", keyword.toLowerCase())));
         }
-        
+
         Boolean weddingOnly = (Boolean) findArgs.get("weddingOnly");
         if (weddingOnly != null) {
             predicates.add(ctrBuilder.equal(root.get("wOnly"), weddingOnly));
         }
-        
+
         queryBuilder.where(ctrBuilder.and(predicates.toArray(new Predicate[0])));
-        
+
         Query query = session.createQuery(queryBuilder);
-        
+
         if (findArgs.get("pageIndex") != null) {
             int pageSize = (Integer) findArgs.get("pageSize");
             int pageIndex = (Integer) findArgs.get("pageIndex");
             query.setFirstResult((pageIndex - 1) * pageSize);
             query.setMaxResults(pageSize);
         }
-        
+
         return query.getResultList();
     }
-    
-    
+
     @Override //ok
     public List<Dish> findAllInBranchId(int branchId) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -93,7 +89,6 @@ public class DishRepositoryImpl implements DishRepository{
 //        List<Object[]> list = query.getResultList();
         return query.getResultList();
     }
-
 
     @Override
     public boolean addOrUpdateDish(Dish dish) {
@@ -209,7 +204,7 @@ public class DishRepositoryImpl implements DishRepository{
             return false;
         }
     }
-    
+
     @Override
     public boolean setAvailableForDishInBranch(Dish dish, Branch branch, boolean isAvailable) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -227,6 +222,5 @@ public class DishRepositoryImpl implements DishRepository{
             return false;
         }
     }
-       
-    
+
 }

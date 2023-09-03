@@ -1,8 +1,8 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.Wedding;
 import com.qltc.pojo.WeddingPicture;
-import com.qltc.repositories.WeddingRepository;
+import com.qltc.repository.WeddingRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class WeddingRepositoryImpl implements  WeddingRepository {
-    
+public class WeddingRepositoryImpl implements WeddingRepository {
+
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
 
@@ -46,26 +46,26 @@ public class WeddingRepositoryImpl implements  WeddingRepository {
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Wedding> criteriaQuery = criteriaBuilder.createQuery(Wedding.class);
         Root<Wedding> weddingRoot = criteriaQuery.from(Wedding.class);
-        
+
         List<Predicate> predicates = new ArrayList<>();
-        
+
         Boolean isCompleted = (Boolean) findArgs.get("completed");
         if (isCompleted != null) {
             predicates.add(criteriaBuilder.equal(weddingRoot.get("isCompleted"), isCompleted));
         }
-        
+
         Boolean onlyDeposit = (Boolean) findArgs.get("onlyDeposit");
         if (onlyDeposit != null) {
             predicates.add(criteriaBuilder.isNull(weddingRoot.get("totalLeft")));
         }
-        
+
         Boolean allPaid = (Boolean) findArgs.get("allPaid");
         if (allPaid != null) {
             predicates.add(criteriaBuilder.isNotNull(weddingRoot.get("totalLeft")));
         }
-        
+
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        
+
         TypedQuery<Wedding> query = session.createQuery(criteriaQuery);
         return query.getResultList();
     }
@@ -84,7 +84,7 @@ public class WeddingRepositoryImpl implements  WeddingRepository {
             return false;
         }
     }
-    
+
     @Override
     public boolean addPictureToWedding(Wedding wedding, WeddingPicture picture) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -122,5 +122,5 @@ public class WeddingRepositoryImpl implements  WeddingRepository {
             return false;
         }
     }
-    
+
 }

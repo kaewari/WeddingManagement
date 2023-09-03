@@ -1,7 +1,7 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.WeddingPicture;
-import com.qltc.repositories.WeddingPictureRepository;
+import com.qltc.repository.WeddingPictureRepository;
 import java.util.List;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class WeddingPictureRepositoryImpl implements  WeddingPictureRepository {
+public class WeddingPictureRepositoryImpl implements WeddingPictureRepository {
 
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
-    
+
     @Override
     public List<WeddingPicture> findAll() {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -53,7 +53,7 @@ public class WeddingPictureRepositoryImpl implements  WeddingPictureRepository {
             return false;
         }
     }
-    
+
     @Override
     public boolean showOrHide(WeddingPicture picture, boolean guestWillSee) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -65,7 +65,7 @@ public class WeddingPictureRepositoryImpl implements  WeddingPictureRepository {
             return false;
         }
     }
-    
+
     @Override
     public boolean showOrHideById(int id, boolean guestWillSee) {
         WeddingPicture existing = findById(id);
@@ -101,5 +101,5 @@ public class WeddingPictureRepositoryImpl implements  WeddingPictureRepository {
             return true;
         }
     }
-    
+
 }
