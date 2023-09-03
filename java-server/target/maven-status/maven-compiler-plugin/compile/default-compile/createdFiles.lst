@@ -82,6 +82,7 @@ com\qltc\repository\WeddingServicePriceRepository.class
 com\qltc\repository\OrderRepository.class
 com\qltc\controller\ApiCustomerFeedbackController.class
 com\qltc\pojo\Wedding.class
+com\qltc\controller\ApiNotFoundController.class
 com\qltc\repository\impl\EmployeeRepositoryImpl.class
 com\qltc\service\OrderService.class
 com\qltc\pojo\UserPermission.class
