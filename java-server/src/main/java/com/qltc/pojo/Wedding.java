@@ -1,9 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -19,16 +16,10 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-/**
- *
- * @author sonho
- */
-@Getter
-@Setter
 @Entity
+@Data
 @Table(name = "wedding")
 public class Wedding implements Serializable {
 
@@ -37,38 +28,76 @@ public class Wedding implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
+    
     @Basic(optional = false)
-    private Long totalLeft;
+    private double deposit;
+    
     @Basic(optional = false)
-    private Long deposit;
+    private double totalLeft;
+    
+    @Basic(optional = false)
+    private double discount = 0;
+    
     @Basic(optional = false)
     private String paidVia;
+    
+    private String receiptNo;
+    
     @Basic(optional = false)
-    private Boolean isCompleted;
+    private Boolean isCompleted = false;
+    
     @Basic(optional = false)
     private int tableNumber;
+    
     @Basic(optional = false)
     private int guestNumber;
+    
     @Basic(optional = false)
     private String description;
+    
     @Basic(optional = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date celebrityDate;
+    
     @Basic(optional = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate;
-    @JoinColumn(name = "orderId", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    @Basic(optional = false)
-    private Order orderId;
-    @JoinColumn(name = "createdBy", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    @Basic(optional = false)
-    private User userId;
-    @JoinColumn(name = "customerId", referencedColumnName = "id")
-    @ManyToOne(optional = false)
-    @Basic(optional = false)
-    private User customerId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "weddingId")
-    private Set<WeddingPicture> weddingPicturesSet;
+    private Date createdDate = new Date();
+    
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "orderId")
+    private Order order;
+    
+    @ManyToOne
+    @JoinColumn(name = "createdBy")
+    private User user;
+    
+    @JoinColumn(name = "customerId")
+    @ManyToOne
+    private User customer;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "wedding", orphanRemoval = true)
+    private Set<WeddingPicture> pictures;
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { return true; }
+        if (!(o instanceof Wedding)) { return false;}
+        return id != null && id.equals(((Wedding) o).getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+    
+    public void addWeddingPicture(WeddingPicture weddingPicture) {
+        pictures.add(weddingPicture);
+        weddingPicture.setWedding(this);
+    }
+    
+    public void removeWeddingPicture(WeddingPicture weddingPicture) {
+        pictures.remove(weddingPicture);
+        weddingPicture.setWedding(null);
+    }
 }

@@ -1,30 +1,23 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-/**
- *
- * @author sonho
- */
-@Getter
-@Setter
+
 @Entity
-@Table(name = "permission")
+@Data
+@Table(name = "permissions")
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -32,10 +25,35 @@ public class Permission implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
+    
     @Basic(optional = false)
     private String value;
-    @Basic(optional = false)
-    private Boolean allow;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "permissionId")
-    private Set<UserPermission> userPermissionSet;
+    
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "permission", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<UserPermission> userPermissions;
+    
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "permission", fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<UserGroupPermission> userGroupPermissions;
+    
+    public void addUserPermission(UserPermission userPermission) {
+        userPermissions.add(userPermission);
+        userPermission.setPermission(this);
+    }
+    
+    public void removeUserPermission(UserPermission userPermission) {
+        userPermissions.remove(userPermission);
+        userPermission.setPermission(null);
+    }
+    
+    public void addUserGroupPermission(UserGroupPermission userGroupPermission) {
+        userGroupPermissions.add(userGroupPermission);
+        userGroupPermission.setPermission(this);
+    }
+    
+    public void removeUserGroupPermission(UserGroupPermission userGroupPermission) {
+        userGroupPermissions.remove(userGroupPermission);
+        userGroupPermission.setPermission(null);
+    }
 }

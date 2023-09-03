@@ -1,15 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,18 +14,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-/**
- *
- * @author sonho
- */
-@Getter
-@Setter
+
 @Entity
+@Data
 @Table(name = "hall_price")
 public class HallPrice implements Serializable {
 
@@ -36,17 +26,35 @@ public class HallPrice implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
+    
     @Basic(optional = false)
     private String period;
+    
     @Basic(optional = false)
-    private Long price;
+    private double price;
+    
     @Basic(optional = false)
-    private Float discount;
-    @Temporal(TemporalType.DATE)
-    private Date createdDate;
-    @JoinColumn(name = "hallId", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private Hall hallId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "hallPricesId")
-    private Set<OrderHallDetails> orderDetailsHallsSet;
+    private float discount = 0;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hallId")
+    private Hall hall;
+
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "hallPrice")
+    private Set<OrderDetailsHall> orderDetails;
+    
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof HallPrice)) return false;
+        return obj != null && this.equals(((HallPrice) obj).getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }

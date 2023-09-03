@@ -1,16 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
-package com.qltc.repository;
+package com.qltc.repositories;
 
 import com.qltc.pojo.Branch;
+import java.util.List;
+import java.util.Map;
 
-/**
- *
- * @author sonho
- */
+
 public interface BranchRepository {
-
-    Branch getBranchById(int id);
+    public List<Branch> findAll(boolean isActive);
+    public Branch findById(int id);
+    public List<Branch> find(Map<String, Object> findArgs);
+    public boolean addOrUpdateBranch(Branch branch);
+    public boolean deactivateOrActivateBranchById(int id, boolean isActive);
+    public boolean deactivateOrActivateBranch(Branch branch, boolean isActive);
+    public boolean deleteBranchById(int id);
+    public boolean deleteBranch(Branch branch);
 }

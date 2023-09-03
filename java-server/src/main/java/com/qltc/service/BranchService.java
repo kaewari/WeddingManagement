@@ -1,16 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
-package com.qltc.service;
+package com.qltc.services;
 
 import com.qltc.pojo.Branch;
+import java.util.List;
+import java.util.Map;
 
-/**
- *
- * @author sonho
- */
 public interface BranchService {
-
-    Branch getBranchById(int id);
+    public List<Branch> findAll();
+    public Branch findById(int id);
+    public List<Branch> find(Map<String, Object> findArgs);
+    public boolean addOrUpdateBranch(Branch branch);
+    public boolean deactivateBranchById(int id);
+    public boolean deactivateBranch(Branch branch);
+    public boolean activateBranchById(int id);
+    public boolean activateBranch(Branch branch);
+    public boolean deleteBranchById(int id);
+    public boolean deleteBranch(Branch branch);
 }
