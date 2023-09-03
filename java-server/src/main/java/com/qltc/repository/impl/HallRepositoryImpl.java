@@ -1,9 +1,9 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.Branch;
 import com.qltc.pojo.Hall;
 import com.qltc.pojo.HallPrice;
-import com.qltc.repositories.HallRepository;
+import com.qltc.repository.HallRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +15,6 @@ import javax.persistence.criteria.Root;
 import org.hibernate.HibernateError;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -23,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class HallRepositoryImpl implements  HallRepository {
-    
+public class HallRepositoryImpl implements HallRepository {
+
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
 
@@ -40,7 +39,7 @@ public class HallRepositoryImpl implements  HallRepository {
         Session session = sessionFactory.getObject().getCurrentSession();
         return session.get(Hall.class, id);
     }
-    
+
     @Override
     // find(new Map<String, Object>() {"minPrice"=double, "maxPrice"=double})
     public List<Hall> find(Map<String, Object> findArgs) {
@@ -49,21 +48,20 @@ public class HallRepositoryImpl implements  HallRepository {
         CriteriaQuery<Hall> query = criteriaBuilder.createQuery(Hall.class);
         Root<Hall> root = query.from(Hall.class);
         Root<HallPrice> rootPrice = query.from(HallPrice.class);
-        
+
         double minPrice = (double) findArgs.get("minPrice");
         double maxPrice = (double) findArgs.get("maxPrice");
-        
+
         List<Predicate> predicates = new ArrayList<>();
         predicates.add(criteriaBuilder.greaterThanOrEqualTo(rootPrice.get("price"), minPrice));
         predicates.add(criteriaBuilder.lessThanOrEqualTo(rootPrice.get("price"), minPrice));
-        
+
         query.where(predicates.toArray(new Predicate[0]));
         query.multiselect(root);
-        
+
         return session.createQuery(query).getResultList();
     }
-    
-    
+
     @Override
     public List<Hall> findAllInBranch(Branch branch) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -97,8 +95,7 @@ public class HallRepositoryImpl implements  HallRepository {
             query.setParameter(2, id);
             query.executeUpdate();
             return true;
-        }
-        catch (HibernateException e) {
+        } catch (HibernateException e) {
             return false;
         }
     }
@@ -127,10 +124,9 @@ public class HallRepositoryImpl implements  HallRepository {
             hall.setIsActive(false);
             session.delete(hall);
             return true;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
-    
+
 }

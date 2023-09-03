@@ -1,7 +1,7 @@
-package com.qltc.controllers;
+package com.qltc.controller;
 
 import com.qltc.pojo.Permission;
-import com.qltc.services.PermissionService;
+import com.qltc.service.PermissionService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,16 +14,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/permission")
 public class ApiPermissionController {
-    
+
     @Autowired
     private PermissionService permissionService;
-    
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<Permission> getAll() {
         return permissionService.findAll();
     }
-    
+
     @GetMapping("/{value:[a-zA-Z0-9-_]+}")
     public List<Permission> getByType(@PathVariable("value") String type) {
         return permissionService.findByName(type);

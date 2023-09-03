@@ -1,18 +1,17 @@
-package com.qltc.services.impl;
+package com.qltc.service.impl;
 
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
 import com.qltc.pojo.UserGroup;
-import com.qltc.repositories.PermissionRepository;
-import com.qltc.services.PermissionService;
+import com.qltc.repository.PermissionRepository;
+import com.qltc.service.PermissionService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 @Service
-public class PermissionServiceImpl implements PermissionService{
-    
+public class PermissionServiceImpl implements PermissionService {
+
     @Autowired
     private PermissionRepository permissionRepo;
 
@@ -52,7 +51,7 @@ public class PermissionServiceImpl implements PermissionService{
     }
 
     @Override
-    public boolean grantPermissionForUserGroup(UserGroup userGroup, List<Permission> permissions){
+    public boolean grantPermissionForUserGroup(UserGroup userGroup, List<Permission> permissions) {
         return permissionRepo.grantOrDenyPermissionForGroupUser(userGroup, permissions, true);
     }
 
@@ -70,5 +69,5 @@ public class PermissionServiceImpl implements PermissionService{
     public boolean resetAllPermissionsOfUserGroup(UserGroup userGroup) throws NoSuchFieldException {
         return permissionRepo.resetPermissionOfUserGroup(userGroup);
     }
-    
+
 }

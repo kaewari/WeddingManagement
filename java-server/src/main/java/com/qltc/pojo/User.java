@@ -58,7 +58,7 @@ public class User implements Serializable {
     private MultipartFile file;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
     private Set<Employee> employeeSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<UserInGroup> userInGroupSet;
 
 }

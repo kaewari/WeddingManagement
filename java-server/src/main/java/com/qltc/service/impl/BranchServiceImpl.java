@@ -1,17 +1,16 @@
-package com.qltc.services.impl;
+package com.qltc.service.impl;
 
 import com.qltc.pojo.Branch;
-import com.qltc.repositories.BranchRepository;
-import com.qltc.services.BranchService;
+import com.qltc.repository.BranchRepository;
+import com.qltc.service.BranchService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class BranchServiceImpl implements BranchService {
-    
+
     @Autowired
     private BranchRepository branchRepo;
 
@@ -42,7 +41,7 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public boolean deactivateBranch(Branch branch) {
-        return branchRepo.deactivateOrActivateBranch(branch,false);
+        return branchRepo.deactivateOrActivateBranch(branch, false);
     }
 
     @Override
@@ -65,6 +64,4 @@ public class BranchServiceImpl implements BranchService {
         return branchRepo.deleteBranch(branch);
     }
 
-    
-    
 }

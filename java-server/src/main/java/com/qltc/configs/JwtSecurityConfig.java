@@ -72,7 +72,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/api/employees/").hasAuthority("VIEW_LIST_EMPLOYEE")
                 .antMatchers(HttpMethod.GET, "/api/employees/id/**").hasAuthority("VIEW_USER_BY_ID")
                 .antMatchers(HttpMethod.GET, "/api/employees/identity/**").hasAuthority("VIEW_EMPLOYEE_BY_IDENTITY_NUMBER")
-                .antMatchers(HttpMethod.POST, "/api/employees/").hasAuthority("ADD_EMPLOYEE")
+                .antMatchers(HttpMethod.POST, "/api/employees/add/").hasAuthority("ADD_EMPLOYEE")
                 .antMatchers(HttpMethod.POST, "/api/employees/update/**").hasAuthority("UPDATE_EMPLOYEE")
                 .antMatchers(HttpMethod.DELETE, "/api/employees/delete/**").hasAuthority("DELETE_EMPLOYEE")
                 .antMatchers(HttpMethod.GET, "/api/test/**").permitAll()

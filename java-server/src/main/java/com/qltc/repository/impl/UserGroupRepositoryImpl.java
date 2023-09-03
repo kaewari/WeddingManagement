@@ -1,11 +1,11 @@
-package com.qltc.repositories.impl;
+package com.qltc.repository.impl;
 
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
 import com.qltc.pojo.UserGroup;
 import com.qltc.pojo.UserGroupPermission;
 import com.qltc.pojo.UserInGroup;
-import com.qltc.repositories.UserGroupRepository;
+import com.qltc.repository.UserGroupRepository;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.Query;
@@ -18,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @Transactional
-public class UserGroupRepositoryImpl implements  UserGroupRepository {
-    
+public class UserGroupRepositoryImpl implements UserGroupRepository {
+
     @Autowired
     LocalSessionFactoryBean sessionFactory;
 
@@ -43,7 +43,7 @@ public class UserGroupRepositoryImpl implements  UserGroupRepository {
         query.setParameter(1, userGroup.getId());
         return query.getResultList();
     }
-    
+
     @Override
     public List<Permission> getAllPermissionsOfUserGroup(UserGroup userGroup) {
         Session session = sessionFactory.getObject().getCurrentSession();
@@ -142,11 +142,11 @@ public class UserGroupRepositoryImpl implements  UserGroupRepository {
             return false;
         }
     }
-    
+
     private UserInGroup getUserExistingInGroup(User user, UserGroup userGroup) {
         Session session = sessionFactory.getObject().getCurrentSession();
         try {
-            Query query = session.createQuery("From UserInGroup uig Where" 
+            Query query = session.createQuery("From UserInGroup uig Where"
                     + " uig.userId = ? and uig.groupId = ?");
             query.setParameter(0, user.getId());
             query.setParameter(1, userGroup.getId());
@@ -157,5 +157,5 @@ public class UserGroupRepositoryImpl implements  UserGroupRepository {
             return null;
         }
     }
-    
+
 }

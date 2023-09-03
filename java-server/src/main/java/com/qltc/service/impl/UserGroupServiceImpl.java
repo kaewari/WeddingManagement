@@ -1,17 +1,17 @@
-package com.qltc.services.impl;
+package com.qltc.service.impl;
 
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
 import com.qltc.pojo.UserGroup;
-import com.qltc.repositories.UserGroupRepository;
-import com.qltc.services.UserGroupService;
+import com.qltc.repository.UserGroupRepository;
+import com.qltc.service.UserGroupService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class UserGroupServiceImpl implements UserGroupService {
-    
+
     @Autowired
     private UserGroupRepository userGroupRepo;
 
@@ -34,12 +34,12 @@ public class UserGroupServiceImpl implements UserGroupService {
     public List<Permission> getAllPermissionsOfUserGroup(UserGroup userGroup) {
         return userGroupRepo.getAllPermissionsOfUserGroup(userGroup);
     }
-    
+
     @Override
     public List<Permission> getAllowedPermissionsOfUserGroup(UserGroup userGroup, boolean allows) {
         return userGroupRepo.getAllPermissionsOfUserGroup(userGroup, true);
     }
-    
+
     @Override
     public List<Permission> getDeniedPermissionsOfUserGroup(UserGroup userGroup) {
         return userGroupRepo.getAllPermissionsOfUserGroup(userGroup, false);
@@ -74,5 +74,5 @@ public class UserGroupServiceImpl implements UserGroupService {
     public boolean removeUserFromGroup(User user, UserGroup userGroup) throws NoSuchFieldException {
         return userGroupRepo.removeUserFromGroup(user, userGroup);
     }
-    
+
 }

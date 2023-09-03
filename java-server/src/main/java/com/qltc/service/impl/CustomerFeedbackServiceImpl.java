@@ -1,9 +1,9 @@
-package com.qltc.services.impl;
+package com.qltc.service.impl;
 
 import com.qltc.pojo.CustomerFeedback;
 import com.qltc.pojo.User;
-import com.qltc.repositories.CustomerFeedbackRepository;
-import com.qltc.services.CustomerFeedbackService;
+import com.qltc.repository.CustomerFeedbackRepository;
+import com.qltc.service.CustomerFeedbackService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomerFeedbackServiceImpl implements CustomerFeedbackService{
-    
+public class CustomerFeedbackServiceImpl implements CustomerFeedbackService {
+
     @Autowired
     private CustomerFeedbackRepository customerFeedbackRepo;
 
@@ -23,12 +23,15 @@ public class CustomerFeedbackServiceImpl implements CustomerFeedbackService{
 
     @Override
     public List<CustomerFeedback> findAllNoReply() {
-        return customerFeedbackRepo.find(new HashMap<String, Object>() 
-            {{ put("replied", false); }});
-    }   
+        return customerFeedbackRepo.find(new HashMap<String, Object>() {
+            {
+                put("replied", false);
+            }
+        });
+    }
 
     @Override
-    public CustomerFeedback findById(int id){
+    public CustomerFeedback findById(int id) {
         return customerFeedbackRepo.findById(id);
     }
 
@@ -36,18 +39,18 @@ public class CustomerFeedbackServiceImpl implements CustomerFeedbackService{
     public List<CustomerFeedback> find(Map<String, Object> findArgs) {
         return customerFeedbackRepo.find(findArgs);
     }
-    
+
     @Override
     public boolean addOrUpdateCustomerFeedback(CustomerFeedback feedback) {
         return customerFeedbackRepo.addOrUpdateCustomerFeedback(feedback);
     }
-    
+
     @Override
-    public boolean updateCustomerFeedback(CustomerFeedback feedback, String alternation){
+    public boolean updateCustomerFeedback(CustomerFeedback feedback, String alternation) {
         feedback.setComment(alternation);
         return feedback != null && customerFeedbackRepo.addOrUpdateCustomerFeedback(feedback);
     }
-    
+
     @Override
     public boolean replyOrUpdateCustomerFeedback(CustomerFeedback feedback, String message, User user) {
         feedback.setReply(message);
@@ -64,5 +67,5 @@ public class CustomerFeedbackServiceImpl implements CustomerFeedbackService{
     public boolean deleteCustomerFeedback(CustomerFeedback feedback) {
         return customerFeedbackRepo.deleteCustomerFeedback(feedback);
     }
-    
+
 }
