@@ -18,7 +18,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Data;
 
-
 @Entity
 @Data
 @Table(name = "wedding")
