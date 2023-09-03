@@ -18,7 +18,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
     "com.qltc.repositories",
     "com.qltc.services"
 })
-@PropertySource("classpath:configs.properties")
 public class WebAppContextConfig implements WebMvcConfigurer {
 
     @Override
