@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.repository.impl;
 
 import com.qltc.pojo.Branch;
@@ -21,10 +17,6 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- * @author sonho
- */
 @Repository
 @Transactional
 public class EmployeeRepositoryImpl implements EmployeeRepository {
@@ -89,7 +81,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             employee.select(root);
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(b.equal(root.get("userId"), userId));
-            employee.where(predicates.toArray(Predicate[]::new));
+            employee.where(predicates.toArray(new Predicate[0]));
             Query q = s.createQuery(employee);
             return (Employee) q.getSingleResult();
         } catch (NoResultException nre) {
@@ -121,7 +113,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(b.equal(root.get("branchId"), branchId));
 
-            employee.where(predicates.toArray(Predicate[]::new));
+            employee.where(predicates.toArray(new Predicate[0]));
             Query q = s.createQuery(employee);
             return (Branch) q.getResultList();
         } catch (NoResultException nre) {

@@ -49,11 +49,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean deleteUserById(int id) {
         Session s = this.factory.getObject().getCurrentSession();
-        User p = this.getUserById(id);
         try {
+            User p = this.getUserById(id);
             s.delete(p);
             return true;
-        } catch (HibernateException ex) {
+        } catch (NoResultException nre) {
             return false;
         }
     }
