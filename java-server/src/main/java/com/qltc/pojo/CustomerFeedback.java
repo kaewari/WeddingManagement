@@ -37,7 +37,7 @@ public class CustomerFeedback implements Serializable {
     
     @Basic(optional = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate = new Date();
+    private Date createdDate;
     
     private String reply;
     

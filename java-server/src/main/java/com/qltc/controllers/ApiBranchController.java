@@ -173,7 +173,7 @@ public class ApiBranchController {
         }
     }
     
-    @PostMapping("/{branchId}/remove-dish") //ok?
+    @PostMapping("/{branchId}/remove-dish") //ok
     public ResponseEntity removeDishFromBranch(@PathVariable("branchId") int id,
             @RequestParam("dishId") int dishId) {
         Branch branch = branchService.findById(id);
@@ -204,7 +204,7 @@ public class ApiBranchController {
     }
     
     @DeleteMapping("/{branchId}") //ok
-    //500 error cannot delete by foreign key
+    //500 error cannot delete by foreign key since the database is ignore delete cascade
     //if no any foreign key will delete ok
     public ResponseEntity deleteBranch(@PathVariable(name = "branchId") int branchId) {
         Branch branch = branchService.findById(branchId);
