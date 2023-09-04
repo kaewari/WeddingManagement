@@ -1,6 +1,5 @@
 package com.qltc.pojo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -10,39 +9,43 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-
+@Getter
+@Setter
 @Entity
-@Data
 @Table(name = "user_permission")
 public class UserPermission implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    
     @Basic(optional = false)
-    private Boolean allows = false;
-    
-    @JsonIgnore
+    private Integer id;
+
+    @Basic(optional = false)
+    private Boolean allow;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "permissionId")
     private Permission permission;
-    
-    @JsonIgnore
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId")
     private User user;
-    
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof UserPermission)) { return false;}
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserPermission)) {
+            return false;
+        }
         return id != null && id.equals(((UserPermission) o).getId());
     }
-    
+
     @Override
     public int hashCode() {
         return getClass().hashCode();

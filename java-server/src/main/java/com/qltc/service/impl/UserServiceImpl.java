@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             throw new UsernameNotFoundException("Invalid user!");
         }
-        List<UserPermission> userPermission = (List<UserPermission>) (UserPermission) this.userPermissionRepo.getPermissionsByUserId(user.getId());
+        List<UserPermission> userPermission = (List<UserPermission>) (UserPermission) this.userPermissionRepo.getPermissionsOfUserByUserId(user.getId());
         Set<GrantedAuthority> authorities = new HashSet<>();
         userPermission.forEach(u -> {
             authorities.add(new SimpleGrantedAuthority(u.toString()));

@@ -1,13 +1,12 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.repository.impl;
 
 import com.qltc.pojo.Permission;
+import com.qltc.pojo.UserPermission;
 import com.qltc.repository.UserPermissionRepository;
 import java.util.List;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
@@ -26,37 +25,122 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
     private LocalSessionFactoryBean factory;
 
     @Override
-    public List<Permission> getPermissionsByUserId(int userId) {
+    public List<Permission> getPermissionsOfUserByUserId(int userId) {
         Session s = this.factory.getObject().getCurrentSession();
-        String queryString = "Select p.value From permissions p Where p.id in (Select e.id From user_permission e Where e.userId=?1) and p.allow = 1";
-        Query query = s.createNativeQuery(queryString);
-        query.setParameter(1, userId);
+        String queryString = "Select * From permissions Where id in "
+                + "(Select permissionId From user_permission Where userId=? and allow=1)";
+        Query query = s.createNativeQuery(queryString, Permission.class)
+                .setParameter(1, userId);
         return query.getResultList();
     }
 
     @Override
-    public Boolean addOrUpdatePermissionsByUserId() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public UserPermission getUserPermissionById(int id) {
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            Query query = s.createQuery("From UserPermission u Where u.id =:id");
+            query.setParameter("id", id);
+            return (UserPermission) query.getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
     }
 
     @Override
-    public Boolean deleteUserPermissionById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public UserPermission addUserPermissionsByUserId(UserPermission userPermisison) {
+
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            s.save(userPermisison);
+            return userPermisison;
+        } catch (HibernateException e) {
+            return null;
+        }
     }
 
     @Override
-    public Boolean deleteUserPermissionsByUserId(int userId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean updateUserPermissionById(UserPermission userPermisison) {
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            s.update(userPermisison);
+            return true;
+        } catch (HibernateException he) {
+            return false;
+        }
     }
 
     @Override
-    public Boolean deleteUserPermissionsByPermissionId(int permissionId) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean deleteUserPermissionById(int id) {
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            UserPermission p = this.getUserPermissionById(id);
+            s.delete(p);
+            return true;
+        } catch (HibernateException he) {
+            return false;
+        }
     }
 
     @Override
-    public Permission getPermissionById(int id) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public boolean deleteUserPermissionsByUserId(int userId) {
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            List<UserPermission> listP = this.getUserPermissionsByUserId(userId);
+            listP.forEach(l -> {
+                s.delete(l);
+            });
+            return true;
+        } catch (HibernateException he) {
+            return false;
+        }
     }
 
+    @Override
+    public boolean deleteUserPermissionsByPermissionId(int permissionId) {
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            List<UserPermission> listP = this.getUserPermissionsByPermissionId(permissionId);
+            listP.forEach(l -> {
+                s.delete(l);
+            });
+
+            return true;
+        } catch (HibernateException he) {
+            return false;
+        }
+    }
+
+    @Override
+    public List<UserPermission> getUserPermissionsByUserId(int userId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String queryString = "Select * From user_permission Where userId=?1";
+        Query query = s.createNativeQuery(queryString, UserPermission.class)
+                .setParameter(1, userId);
+        return query.getResultList();
+    }
+
+    @Override
+    public List<UserPermission> getUserPermissionsByPermissionId(int permissionId) {
+        Session s = this.factory.getObject().getCurrentSession();
+        String queryString = "Select * From user_permission Where permissionId=?1";
+        Query query = s.createNativeQuery(queryString, UserPermission.class)
+                .setParameter(1, permissionId);
+        return query.getResultList();
+    }
+
+    @Override
+    public UserPermission checkExistUserPermission(int userId, int permissionId) {
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            String queryString = "(Select * "
+                    + "From user_permission Where userId=?1 and permissionId=?2 "
+                    + "Limit 1)";
+            Query query = s.createNativeQuery(queryString, UserPermission.class);
+            query.setParameter(1, userId);
+            query.setParameter(2, permissionId);
+            return (UserPermission) query.getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
+    }
 }

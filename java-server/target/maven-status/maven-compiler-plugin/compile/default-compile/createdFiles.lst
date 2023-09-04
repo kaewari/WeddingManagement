@@ -1,4 +1,5 @@
 com\qltc\controller\ApiWeddingController.class
+com\qltc\controller\ApiOrderController.class
 com\qltc\controller\ApiUserGroupController$1.class
 com\qltc\service\DishService.class
 com\qltc\controller\ApiWeddingController$2.class
@@ -14,10 +15,12 @@ com\qltc\controller\ApiBranchController.class
 com\qltc\repository\impl\BranchRepositoryImpl.class
 com\qltc\service\impl\CustomerFeedbackServiceImpl$1.class
 com\qltc\filters\JwtAuthenticationTokenFilter.class
+com\qltc\controller\ApiUserPermissionController.class
 com\qltc\repository\impl\UserPermissionRepositoryImpl.class
 com\qltc\service\impl\BranchServiceImpl.class
 com\qltc\service\impl\CustomerFeedbackServiceImpl.class
 com\qltc\repository\WeddingServiceRepository.class
+com\qltc\service\impl\UserPermissionServiceImpl.class
 com\qltc\repository\impl\WeddingRepositoryImpl.class
 com\qltc\configs\HibernateConfig.class
 com\qltc\pojo\Branch.class
@@ -53,7 +56,6 @@ com\qltc\service\WeddingService.class
 com\qltc\repository\DishRepository.class
 com\qltc\service\impl\EmployeeServiceImpl.class
 com\qltc\repository\impl\HallRepositoryImpl.class
-com\qltc\controllers\ApiOrderController.class
 com\qltc\configs\WebAppContextConfig.class
 com\qltc\configs\JwtSecurityConfig.class
 com\qltc\pojo\Dish.class

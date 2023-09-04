@@ -5,11 +5,13 @@
 package com.qltc.filters;
 
 import com.qltc.components.JwtService;
+import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
-import com.qltc.repository.UserPermissionRepository;
+import com.qltc.service.UserPermissionService;
 import com.qltc.service.UserService;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -37,7 +39,7 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     @Autowired
     private UserService userService;
     @Autowired
-    private UserPermissionRepository userPermissionRepo;
+    private UserPermissionService permissionService;
 //    @Autowired
 //    private UsersGroupService usersGroupService;
 
@@ -55,11 +57,11 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
                 boolean accountNonExpired = true;
                 boolean credentialsNonExpired = true;
                 boolean accountNonLocked = true;
-                Object[] permissions = this.userPermissionRepo.getPermissionsByUserId(user.getId()).toArray();
+                List<Permission> permissions = this.permissionService.getPermissionsOfUserByUserId(user.getId());
                 Set<GrantedAuthority> authorities = new HashSet<>();
-                for (Object permission : permissions) {
-                    authorities.add(new SimpleGrantedAuthority(permission.toString()));
-                }
+                permissions.forEach(permission -> {
+                    authorities.add(new SimpleGrantedAuthority(permission.getValue()));
+                });
 //                Set<GrantedAuthority> authorities = new HashSet<>();
 //                authorities.add(new SimpleGrantedAuthority("USER"));
                 UserDetails userDetail = new org.springframework.security.core.userdetails.User(name, user.getPassword(), enabled, accountNonExpired,
