@@ -74,7 +74,7 @@ public class EmployeeRepositoryImpl implements EmployeeRepository {
         try {
             s.update(e);
             return true;
-        } catch (Exception ex) {
+        } catch (NoResultException ex) {
             return false;
         }
     }
