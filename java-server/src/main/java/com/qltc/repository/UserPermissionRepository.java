@@ -1,6 +1,7 @@
 package com.qltc.repository;
 
 import com.qltc.pojo.Permission;
+import com.qltc.pojo.UserPermission;
 import java.util.List;
 
 /**
@@ -9,17 +10,25 @@ import java.util.List;
  */
 public interface UserPermissionRepository {
 
-    Permission getPermissionById(int id);
+    List<UserPermission> getUserPermissionsByUserId(int userId);
 
     List<Permission> getPermissionsByUserId(int id);
     
     List<String> getPermissionStringsByUserId(int id);
 
-    Boolean addOrUpdatePermissionsByUserId();
+    UserPermission getUserPermissionById(int id);
 
-    Boolean deleteUserPermissionById(int id);
+    UserPermission checkExistUserPermission(int userId, int permissionId);
 
-    Boolean deleteUserPermissionsByUserId(int userId);
+    List<Permission> getPermissionsOfUserByUserId(int userId);
 
-    Boolean deleteUserPermissionsByPermissionId(int permissionId);
+    UserPermission addUserPermissionsByUserId(UserPermission userPermisison);
+
+    boolean updateUserPermissionById(UserPermission userPermisison);
+
+    boolean deleteUserPermissionById(int id);
+
+    boolean deleteUserPermissionsByUserId(int userId);
+
+    boolean deleteUserPermissionsByPermissionId(int permissionId);
 }

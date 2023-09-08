@@ -53,7 +53,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     @Override
     public boolean getUserPermissionState(User user, Permission permission) {
         UserPermission userPermission = getUserPermission(user.getId(), permission.getId());
-        return userPermission.getAllows();
+        return userPermission.getAllow();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
 
     @Override
     public boolean grantOrDenyPermissionForUser(User user, List<Permission> permissions,
-             boolean allows) {
+            boolean allows) {
         Session session = sessionFactory.getObject().getCurrentSession();
         if (user == null || permissions.isEmpty()) {
             return false;
@@ -73,13 +73,13 @@ public class PermissionRepositoryImpl implements PermissionRepository {
         for (Permission permission : permissions) {
             UserPermission existing = getUserPermission(user.getId(), permission.getId());
             if (existing != null) {
-                existing.setAllows(allows);
+                existing.setAllow(allows);
                 session.update(existing);
             } else {
                 UserPermission grantOrDenyOne = new UserPermission();
                 grantOrDenyOne.setUser(user);
                 grantOrDenyOne.setPermission(permission);
-                grantOrDenyOne.setAllows(allows);
+                grantOrDenyOne.setAllow(allows);
                 session.save(grantOrDenyOne);
             }
         }
@@ -88,7 +88,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
 
     @Override
     public boolean grantOrDenyPermissionForGroupUser(UserGroup userGroup,
-             List<Permission> permissions, boolean allows) {
+            List<Permission> permissions, boolean allows) {
         Session session = sessionFactory.getObject().getCurrentSession();
         if (userGroup == null || permissions.isEmpty()) {
             return false;
