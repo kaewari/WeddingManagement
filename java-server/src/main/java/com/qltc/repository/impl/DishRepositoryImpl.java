@@ -5,6 +5,7 @@ import com.qltc.pojo.Dish;
 import com.qltc.pojo.DishInBranch;
 import com.qltc.repository.DishRepository;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -83,11 +84,18 @@ public class DishRepositoryImpl implements DishRepository {
     @Override //ok
     public List<Dish> findAllInBranchId(int branchId) {
         Session session = sessionFactory.getObject().getCurrentSession();
-        String queryString = "Select d, dib From Branch b Join DishInBranch dib On b = dib.branch Join Dish d On dib.dish = d Where b.id = ?1 and dib.isAvailable = true and d.isAvailable = true Order by dib.id desc";
+        String queryString = "Select d, dib From DishInBranch dib Join Dish d On dib.dish = d Where dib.branch.id = ?1 and d.isAvailable = true Order by dib.id desc";
         Query query = session.createQuery(queryString);
         query.setParameter(1, branchId);
-//        List<Object[]> list = query.getResultList();
-        return query.getResultList();
+        List<Object[]> list = query.getResultList();
+        List<Dish> dishes = new LinkedList<>();
+        for (Object[] ob : list) {
+            Dish dish = (Dish) ob[0];
+            DishInBranch dishInBranch = (DishInBranch) ob[1];
+            dish.setIsAvailable(dishInBranch.getIsAvailable());
+            dishes.add(dish);
+        }
+        return dishes;
     }
 
     @Override
@@ -215,7 +223,7 @@ public class DishRepositoryImpl implements DishRepository {
             query.where(builder.and(
                     (builder.equal(root.get("dish"), dish.getId())),
                     (builder.equal(root.get("branch"), branch.getId()))));
-            query.set("isAvailable", isAvailable);
+            query.set(root.get("isAvailable"), isAvailable);
             session.createQuery(query).executeUpdate();
             return true;
         } catch (HibernateException e) {

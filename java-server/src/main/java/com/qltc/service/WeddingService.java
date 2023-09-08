@@ -1,8 +1,11 @@
 package com.qltc.service;
 
+import com.qltc.pojo.HallPrice;
+import com.qltc.pojo.Order;
 import com.qltc.pojo.Wedding;
 import com.qltc.pojo.WeddingPicture;
 import com.qltc.pojo.WeddingServicePrice;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +40,8 @@ public interface WeddingService {
     public boolean deleteWeddingServiceById(int id);
 
     public WeddingServicePrice findWeddingServicePriceById(int id);
+    
+    public boolean addOrUpdateWedding(Wedding wedding);
 
     public boolean addOrUpdateWeddingServicePrice(WeddingServicePrice servicePrice);
 
@@ -55,4 +60,6 @@ public interface WeddingService {
     public boolean deleteWeddingPictureById(int pictureId);
 
     public boolean deleteWeddingById(int weddingId);
+    
+    public List<HallPrice> getAvailableHallPrice(Date date, int hallId);
 }

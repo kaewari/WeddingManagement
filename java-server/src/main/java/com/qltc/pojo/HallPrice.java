@@ -1,6 +1,8 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -22,17 +24,21 @@ import lombok.Data;
 @Table(name = "hall_price")
 public class HallPrice implements Serializable {
 
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private String period;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private double price;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private float discount = 0;
 
@@ -42,7 +48,7 @@ public class HallPrice implements Serializable {
     private Hall hall;
 
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "hallPrice")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "hallPrice", fetch = FetchType.LAZY)
     private Set<OrderDetailsHall> orderDetails;
     
     

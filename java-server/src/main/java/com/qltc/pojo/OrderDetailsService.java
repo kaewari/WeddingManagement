@@ -1,6 +1,10 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.qltc.json.JsonMarkup;
+import com.qltc.json.deserializer.OrderDetailsServiceDeserializer;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,23 +22,29 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "order_services_details")
+@JsonDeserialize(using = OrderDetailsServiceDeserializer.class)
 public class OrderDetailsService implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Integer quantity = 1;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private double price;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Column(nullable = true)
     private String note;
     
+    @JsonView({JsonMarkup.FullData.class, JsonMarkup.FetchedData.class})
     @ManyToOne
     @JoinColumn(name = "servicePriceId")
     private WeddingServicePrice servicePrice;

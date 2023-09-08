@@ -27,7 +27,7 @@ public interface UserGroupService {
 
     public boolean deleteUserGroup(UserGroup userGroup);
 
-    public boolean addUserToGroup(User user, UserGroup userGroup) throws AssertionError;
+    public boolean addUserToGroup(User user, UserGroup userGroup);
 
-    public boolean removeUserFromGroup(User user, UserGroup userGroup) throws NoSuchFieldException;
+    public boolean removeUserFromGroup(User user, UserGroup userGroup);
 }

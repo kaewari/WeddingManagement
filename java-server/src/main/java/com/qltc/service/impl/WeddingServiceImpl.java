@@ -1,5 +1,7 @@
 package com.qltc.service.impl;
 
+import com.qltc.pojo.HallPrice;
+import com.qltc.pojo.Order;
 import com.qltc.pojo.Wedding;
 import com.qltc.pojo.WeddingPicture;
 import com.qltc.pojo.WeddingServicePrice;
@@ -8,6 +10,7 @@ import com.qltc.repository.WeddingRepository;
 import com.qltc.repository.WeddingServicePriceRepository;
 import com.qltc.repository.WeddingServiceRepository;
 import com.qltc.service.WeddingService;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +79,11 @@ public class WeddingServiceImpl implements WeddingService {
     @Override
     public List<WeddingPicture> findWeddingPictureOfWedding(int id) {
         return weddingPictureRepo.findByWeddingId(id);
+    }
+    
+    @Override
+    public boolean addOrUpdateWedding(Wedding wedding) {
+        return weddingRepo.addOrUpdate(wedding);
     }
 
     @Override
@@ -162,4 +170,8 @@ public class WeddingServiceImpl implements WeddingService {
         return weddingRepo.deleteById(weddingId);
     }
 
+    @Override
+    public List<HallPrice> getAvailableHallPrice(Date date, int hallId) {
+        return weddingRepo.getAvailableHallPrice(date, hallId);
+    }
 }

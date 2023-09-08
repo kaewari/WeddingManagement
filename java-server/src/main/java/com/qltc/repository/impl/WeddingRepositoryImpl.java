@@ -1,11 +1,20 @@
 package com.qltc.repository.impl;
 
+import com.qltc.pojo.Hall;
+import com.qltc.pojo.HallPrice;
+import com.qltc.pojo.Order;
+import com.qltc.pojo.OrderDetailsHall;
 import com.qltc.pojo.Wedding;
 import com.qltc.pojo.WeddingPicture;
 import com.qltc.repository.WeddingRepository;
+import com.qltc.service.HallService;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -25,6 +34,9 @@ public class WeddingRepositoryImpl implements WeddingRepository {
 
     @Autowired
     private LocalSessionFactoryBean sessionFactory;
+    
+    @Autowired
+    private HallService hallService;
 
     @Override
     public List<Wedding> findAll() {
@@ -123,4 +135,28 @@ public class WeddingRepositoryImpl implements WeddingRepository {
         }
     }
 
+    @Override
+    public List<HallPrice> getAvailableHallPrice(Date inDate, int hallId) {
+        Set<HallPrice> allHallPrices = hallService.findById(hallId).getPrices();
+        if (allHallPrices.isEmpty()) return new ArrayList<>();
+        List<HallPrice> unAvailableHallPrices = getUnAvailableHallPrice(inDate, hallId);
+        
+        List<HallPrice> availableHallPrices = new LinkedList<>();
+        allHallPrices.forEach((hallPrice) -> {
+            if (!unAvailableHallPrices.contains(hallPrice)) {
+                availableHallPrices.add(hallPrice);
+            }
+        });
+        
+        return availableHallPrices;
+    }
+    
+    private List<HallPrice> getUnAvailableHallPrice(Date inDate, int hallId) {
+        Session session = sessionFactory.getObject().getCurrentSession();
+        Query query = session.createQuery("Select odh.hallPrice From OrderDetailsHall odh Where odh.hallPrice.hall.id = :hallId and odh.order.id In "
+                        + "(Select w.order.id From Wedding w Where w.celebrityDate = :inDate)");
+        query.setParameter("hallId", hallId);
+        query.setParameter("inDate", inDate);
+        return query.getResultList();
+    }
 }

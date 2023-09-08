@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableWebSecurity
 @EnableTransactionManagement
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan(basePackages = {
     "com.qltc.controller",
     "com.qltc.repository",
@@ -77,8 +79,44 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE, "/api/employees/delete/*").hasAuthority("DELETE_EMPLOYEE")
                 .antMatchers(HttpMethod.GET, "/api/test/*").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/current-user/").authenticated()
-                .antMatchers(HttpMethod.GET, "/api/**/comments/").permitAll();
-        http.antMatcher("/api/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
+                .antMatchers(HttpMethod.GET, "/api/**/comments/").permitAll()
+                
+                //other
+                
+                .antMatchers(HttpMethod.GET, "/api/branch", "/api/branch/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/branch", "/api/branch/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/branch", "/api/branch/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/branch", "/api/branch/**").authenticated()
+                
+                .antMatchers(HttpMethod.GET, "/api/dish", "/api/dish/**", "/api/dish/restaurants").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/dish", "/api/dish/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/dish", "/api/dish/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/dish", "/api/dish/**").authenticated()
+                
+                .antMatchers(HttpMethod.GET, "/api/hall", "/api/hall/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/hall", "/api/hall/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/hall", "/api/hall/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/hall", "/api/hall/**").authenticated()
+                
+                .antMatchers("/api/user-group", "/api/user-group/**").authenticated()
+                .antMatchers("/api/permission", "/api/permission/**").authenticated()
+                
+                .antMatchers(HttpMethod.GET, "/api/wedding/sevice", "/api/wedding/service/**", 
+                        "/api/weding/wedding-picture", "/api/weding/wedding-picture/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/wedding", "/api/wedding/**").authenticated()
+                .antMatchers(HttpMethod.POST, "/api/wedding", "/api/wedding/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/wedding", "/api/wedding/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/wedding", "/api/wedding/**").authenticated()
+                
+                .antMatchers(HttpMethod.GET, "/api/feedback", "/api/feedback/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/feedback", "/api/feedback/**").authenticated()
+                .antMatchers(HttpMethod.PUT, "/api/feedback", "/api/feedback/**").authenticated()
+                .antMatchers(HttpMethod.DELETE, "/api/feedback", "/api/feedback/**").authenticated()
+                
+                .anyRequest().permitAll();
+        
+        http.antMatcher("/api/**").httpBasic()
+                .authenticationEntryPoint(restServicesEntryPoint()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .and().addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());

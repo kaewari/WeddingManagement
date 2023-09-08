@@ -39,8 +39,8 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
     @Override
     public List<User> getAllUsersOfUserGroup(UserGroup userGroup) {
         Session session = sessionFactory.getObject().getCurrentSession();
-        Query query = session.createQuery("Select u From UserGroup ug Join UserInGroup uig On ug.id = uig.group Join User u On uig.permission = u.id Where ug.id = ?1");
-        query.setParameter(1, userGroup.getId());
+        Query query = session.createQuery("From User u Where u IN (Select uig.user From UserInGroup uig Where uig.userGroup = :userGroup)");
+        query.setParameter("userGroup", userGroup);
         return query.getResultList();
     }
 
@@ -116,12 +116,12 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
         if (userInGroup != null) {
             return false;
         }
+        Session session = sessionFactory.getObject().getCurrentSession();
         try {
-            Session session = sessionFactory.getObject().getCurrentSession();
-            UserInGroup adding = new UserInGroup();
-            adding.setUser(user);
-            adding.setUserGroup(userGroup);
-            session.save(adding);
+            UserInGroup newOne = new UserInGroup();
+            newOne.setUser(user);
+            newOne.setUserGroup(userGroup);
+            session.save(newOne);
             return true;
         } catch (HibernateException e) {
             return false;
@@ -139,6 +139,7 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
             session.delete(userInGroup);
             return true;
         } catch (HibernateException e) {
+            e.printStackTrace();
             return false;
         }
     }
@@ -147,12 +148,10 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
         Session session = sessionFactory.getObject().getCurrentSession();
         try {
             Query query = session.createQuery("From UserInGroup uig Where"
-                    + " uig.userId = ? and uig.groupId = ?");
-            query.setParameter(0, user.getId());
-            query.setParameter(1, userGroup.getId());
-            query.setMaxResults(1);
-            UserInGroup existing = (UserInGroup) query.getResultList().get(0);
-            return existing;
+                    + " uig.user = ?1 and uig.userGroup = ?2");
+            query.setParameter(1, user);
+            query.setParameter(2, userGroup);
+            return (UserInGroup) query.getSingleResult();
         } catch (Exception e) {
             return null;
         }

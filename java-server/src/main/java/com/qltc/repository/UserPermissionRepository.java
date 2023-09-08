@@ -11,7 +11,9 @@ public interface UserPermissionRepository {
 
     Permission getPermissionById(int id);
 
-    List<Permission> getPermissionsByUserId(int userId);
+    List<Permission> getPermissionsByUserId(int id);
+    
+    List<String> getPermissionStringsByUserId(int id);
 
     Boolean addOrUpdatePermissionsByUserId();
 

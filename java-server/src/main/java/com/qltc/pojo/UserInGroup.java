@@ -1,6 +1,8 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -18,6 +20,7 @@ import lombok.Data;
 @Table(name = "user_in_group")
 public class UserInGroup implements Serializable {
 
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

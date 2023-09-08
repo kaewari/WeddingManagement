@@ -21,7 +21,8 @@ USE `qltc`;
 -- Table structure for table `permissions`
 --
 
-DROP TABLE IF EXISTS `permissions`;
+DROP TABLE IF EXISTS `
+`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `permissions` (
@@ -56,7 +57,7 @@ DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `password` varchar(32) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `name` varchar(45) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `phone` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `identityNumber` varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
@@ -74,7 +75,9 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'sonhoang236@gmail.com','123123','SonHoang','0938927561','111111','123/231',NULL,1,'2023-08-14 22:42:19'),(2,'tung112@gmail.com','111111','TungNguyen','0938999111','000012','42/213',NULL,1,'2023-08-14 22:47:12'),(3,'tu56@gmail.com','111111','TuNguyen','0938099011','000002','55/2',NULL,1,'2023-08-14 22:47:12'),(4,'thinh53@gmail.com','111111','ThinhNguyen','0938922145','000003','111/3',NULL,1,'2023-08-14 22:47:12'),(5,'nguyen666@gmail.com','111111','NguyenTran','0938321455','000004','235/25',NULL,1,'2023-08-14 22:47:12'),(6,'khangg12@gmail.com','111111','KhangNguyen','0938900111','000005','111/12',NULL,1,'2023-08-14 22:47:12'),(7,'dao255@gmail.com','111111','DaoTran','0126471239','000006','99A',NULL,1,'2023-08-14 22:47:12'),(8,'thao142@gmail.com','111111','ThaoBui','0927018312','000007','112B',NULL,1,'2023-08-14 22:47:12'),(9,'hung166@gmail.com','111111','HungHoang','0938421412','000008','43A',NULL,1,'2023-08-14 22:47:12'),(10,'van325@gmail.com','111111','VanLe','0938990001','000009','52A',NULL,1,'2023-08-14 22:47:12'),(11,'hau123@gmail.com','111111','HauNguen','0938432533','000010','46/12',NULL,1,'2023-08-14 22:47:12'),(12,'hau632@gmail.com','111111','HauLe','0938994752','000011','385/12',NULL,1,'2023-08-14 22:47:12'),(13,'duc66@gmail.com','111111','DucLe','0938416222','000001','42/232',NULL,1,'2023-08-14 22:47:12'),(14,'tien321@gmail.com','123123','TienNguyen','0938113222','111112','32/432',NULL,1,'2023-08-15 10:54:50'),(15,'huy43@gmail.com','123123','HuynhHuy','0938775664','111113','99A',NULL,1,'2023-08-15 10:56:49');
+INSERT INTO `users` VALUES (1,'sonhoang236@gmail.com','$2a$12$lqHHHR4g3Ych47IskkPixelfiGPNDXhjRnw6ZB9rwW3f1cIMcFAj6
+','SonHoang','0938927561','111111','123/231',NULL,1,'2023-08-14 22:42:19'),(2,'tung112@gmail.com','111111','TungNguyen','0938999111','000012','42/213',NULL,1,'2023-08-14 22:47:12'),(3,'tu56@gmail.com','111111','TuNguyen','0938099011','000002','55/2',NULL,1,'2023-08-14 22:47:12'),(4,'thinh53@gmail.com','111111','ThinhNguyen','0938922145','000003','111/3',NULL,1,'2023-08-14 22:47:12'),(5,'nguyen666@gmail.com','111111','NguyenTran','0938321455','000004','235/25',NULL,1,'2023-08-14 22:47:12'),(6,'khangg12@gmail.com','111111','KhangNguyen','0938900111','000005','111/12',NULL,1,'2023-08-14 22:47:12'),(7,'dao255@gmail.com','111111','DaoTran','0126471239','000006','99A',NULL,1,'2023-08-14 22:47:12'),(8,'thao142@gmail.com','111111','ThaoBui','0927018312','000007','112B',NULL,1,'2023-08-14 22:47:12'),(9,'hung166@gmail.com','111111','HungHoang','0938421412','000008','43A',NULL,1,'2023-08-14 22:47:12'),(10,'van325@gmail.com','111111','VanLe','0938990001','000009','52A',NULL,1,'2023-08-14 22:47:12'),(11,'hau123@gmail.com','111111','HauNguen','0938432533','000010','46/12',NULL,1,'2023-08-14 22:47:12'),(12,'hau632@gmail.com','111111','HauLe','0938994752','000011','385/12',NULL,1,'2023-08-14 22:47:12'),(13,'duc66@gmail.com','111111','DucLe','0938416222','000001','42/232',NULL,1,'2023-08-14 22:47:12'),(14,'tien321@gmail.com','$2a$12$lqHHHR4g3Ych47IskkPixelfiGPNDXhjRnw6ZB9rwW3f1cIMcFAj6
+','TienNguyen','0938113222','111112','32/432',NULL,1,'2023-08-15 10:54:50'),(15,'huy43@gmail.com','123123','HuynhHuy','0938775664','111113','99A',NULL,1,'2023-08-15 10:56:49');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -121,7 +124,7 @@ DROP TABLE IF EXISTS `user_groups`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_groups` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(20) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
+  `name` varchar(20) UNIQUE CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -235,8 +238,8 @@ CREATE TABLE `customer_feedbacks` (
   `feedbackType` varchar(50) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `comment` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `createdDate` datetime DEFAULT CURRENT_TIMESTAMP,
-  `reply` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `userId` int NOT NULL,
+  `reply` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci,
+  `userId` int,
   PRIMARY KEY (`id`),
   KEY `FK_USERS_CUSTOMERFEEDBACKS_idx` (`userId`),
   KEY `FK_CUSTOMER_CUSTOMERFEEDBACKS_idx` (`customerId`),

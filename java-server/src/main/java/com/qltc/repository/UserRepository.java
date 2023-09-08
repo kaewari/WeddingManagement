@@ -3,12 +3,6 @@ package com.qltc.repository;
 import com.qltc.pojo.User;
 import java.util.List;
 
-/**
- *
- * @author sonho
- * @param <T>
- * @param <V>
- */
 public interface UserRepository<T, V> {
 
     User getUserByName(String name);
@@ -26,4 +20,6 @@ public interface UserRepository<T, V> {
     User addUser(User user);
 
     boolean findUserInfo(T key, V value);
+    
+    public List<String> getPermissionsById(int userId);
 }

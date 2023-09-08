@@ -28,12 +28,23 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
     @Override
     public List<Permission> getPermissionsByUserId(int userId) {
         Session s = this.factory.getObject().getCurrentSession();
-        String queryString = "Select p.value From permissions p Where p.id in (Select e.id From user_permission e Where e.userId=?1) and p.allow = 1";
-        Query query = s.createNativeQuery(queryString);
-        query.setParameter(1, userId);
+        Query query = s.createNativeQuery("Select p.* From user_permission as up "
+                + "Join permissions as p on up.permissionId = p.id Where up.userId = :userId and up.allows = 1");
+        query.setParameter("userId", userId);
         return query.getResultList();
     }
-
+    
+    @Override
+    public List<String> getPermissionStringsByUserId(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query query = s.createNativeQuery("Select p.value From user_permission as up "
+                + "Join permissions as p on up.permissionId = p.id "
+                + "Join user_group_permission ugp on ugp.permissionId = p.id "
+                + "Where up.userId = :userId and up.allows = 1");
+        query.setParameter("userId", id);
+        return query.getResultList();
+    }
+    
     @Override
     public Boolean addOrUpdatePermissionsByUserId() {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody

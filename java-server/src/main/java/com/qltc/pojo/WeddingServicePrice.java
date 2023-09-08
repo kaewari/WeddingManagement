@@ -1,6 +1,8 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -22,20 +24,25 @@ import lombok.Data;
 public class WeddingServicePrice implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private String period;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Double price;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Boolean isAvailable = true;
     
-    @JsonIgnore
+    
+    @JsonView(JsonMarkup.FetchedData.class)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wServiceId")
     private WeddingService service;
