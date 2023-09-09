@@ -66,12 +66,12 @@ public class UserGroupServiceImpl implements UserGroupService {
     }
 
     @Override
-    public boolean addUserToGroup(User user, UserGroup userGroup) throws AssertionError {
+    public boolean addUserToGroup(User user, UserGroup userGroup) {
         return userGroupRepo.addUserToGroup(user, userGroup);
     }
 
     @Override
-    public boolean removeUserFromGroup(User user, UserGroup userGroup) throws NoSuchFieldException {
+    public boolean removeUserFromGroup(User user, UserGroup userGroup) {
         return userGroupRepo.removeUserFromGroup(user, userGroup);
     }
 

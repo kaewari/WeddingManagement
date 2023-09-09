@@ -1,7 +1,10 @@
 package com.qltc.repository;
 
+import com.qltc.pojo.HallPrice;
+import com.qltc.pojo.Order;
 import com.qltc.pojo.Wedding;
 import com.qltc.pojo.WeddingPicture;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,4 +23,6 @@ public interface WeddingRepository {
     public boolean deleteById(int id);
 
     public boolean delete(Wedding wedding);
+    
+    public List<HallPrice> getAvailableHallPrice(Date inDate, int hallId);
 }

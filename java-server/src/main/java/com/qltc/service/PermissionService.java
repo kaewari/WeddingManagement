@@ -17,9 +17,9 @@ public interface PermissionService {
 
     public boolean getUserGroupPermissionState(UserGroup userGroup, Permission permission);
 
-    public boolean resetAllPermissionsOfUser(User user) throws NoSuchFieldException;
+    public boolean resetAllPermissionsOfUser(User user);
 
-    public boolean resetAllPermissionsOfUserGroup(UserGroup userGroup) throws NoSuchFieldException;
+    public boolean resetAllPermissionsOfUserGroup(UserGroup userGroup);
 
     public boolean grantPermissionForUserGroup(UserGroup userGroup, List<Permission> permissions);
 

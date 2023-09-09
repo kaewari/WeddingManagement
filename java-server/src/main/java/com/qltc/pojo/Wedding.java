@@ -1,21 +1,28 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import lombok.Data;
 
 @Entity
@@ -24,60 +31,90 @@ import lombok.Data;
 public class Wedding implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     
-    @Basic(optional = false)
+    @JsonView(JsonMarkup.CoreData.class)
     private double deposit;
     
-    @Basic(optional = false)
+    @JsonView(JsonMarkup.CoreData.class)
     private double totalLeft;
     
-    @Basic(optional = false)
+    @JsonView(JsonMarkup.CoreData.class)
     private double discount = 0;
     
-    @Basic(optional = false)
+    @JsonView(JsonMarkup.CoreData.class)
     private String paidVia;
     
+    @JsonView(JsonMarkup.CoreData.class)
     private String receiptNo;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Boolean isCompleted = false;
     
-    @Basic(optional = false)
+    @JsonView(JsonMarkup.CoreData.class)
+    @Basic
     private int tableNumber;
     
-    @Basic(optional = false)
+    @JsonView(JsonMarkup.CoreData.class)
+    @Basic
     private int guestNumber;
     
-    @Basic(optional = false)
+    @JsonView(JsonMarkup.CoreData.class)
+    @Basic
     private String description;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date celebrityDate;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
     
-    @JsonIgnore
-    @ManyToOne
+    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "orderId")
     private Order order;
     
+    @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "createdBy")
+    @JoinColumn(name = "createdBy", nullable = true)
     private User user;
     
-    @JoinColumn(name = "customerId")
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "customerId", nullable = false)
     private User customer;
     
+    @JsonView(JsonMarkup.FullData.class)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "wedding", orphanRemoval = true)
-    private Set<WeddingPicture> pictures;
+    private Set<WeddingPicture> pictures;    
+    
+    @Transient
+    public Map getWhatCustomer() {
+        if (this.customer == null) return new HashMap<>();
+        Map<String, Object> userJson = new HashMap<>();
+        userJson.put("id", customer.getId());
+        userJson.put("name", customer.getName());
+        userJson.put("avatar", customer.getAvatar());
+        return userJson;
+    }
+    
+    @Transient
+    public Map getWhatUser() {
+        if (this.user == null) return new HashMap<>();
+        Map<String, Object> userJson = new HashMap<>();
+        userJson.put("id", user.getId());
+        userJson.put("name", user.getName());
+        userJson.put("avatar", user.getAvatar());
+        return userJson;
+    }
     
     @Override
     public boolean equals(Object o) {

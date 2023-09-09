@@ -28,4 +28,6 @@ public interface UserService<T, V> extends UserDetailsService {
     boolean authUser(String name, String password);
 
     User addUser(User user, MultipartFile file);
+    
+    public List<String> getPermissions(int userId);
 }

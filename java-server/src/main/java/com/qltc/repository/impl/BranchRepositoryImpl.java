@@ -72,7 +72,7 @@ public class BranchRepositoryImpl implements BranchRepository {
             }
             Boolean inactive = (Boolean) findArgs.get("inactive");
             if (inactive != null) {
-                predicates.add(builder.equal(root.get("isActive"), inactive));
+                predicates.add(builder.equal(root.get("isActive"), !inactive));
             }
 
             query.select(root).where(predicates.toArray(new Predicate[]{}));
@@ -85,7 +85,9 @@ public class BranchRepositoryImpl implements BranchRepository {
                 q.setFirstResult(pageSize * (pageIndex - 1));
                 q.setMaxResults(pageSize);
             }
-            return q.getResultList();
+            
+            List<Branch> branches =  q.getResultList();
+            return branches;
         }
         return null;
     }
