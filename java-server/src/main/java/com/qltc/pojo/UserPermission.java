@@ -12,11 +12,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-
+@Getter
+@Setter
 @Entity
-@Data
 @Table(name = "user_permission")
 public class UserPermission implements Serializable {
 
@@ -28,25 +29,27 @@ public class UserPermission implements Serializable {
     
     @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
-    private Boolean allows = false;
-    
-    @JsonIgnore
+    private Boolean allow;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "permissionId", nullable = false)
     private Permission permission;
-    
-    @JsonIgnore
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
-    
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof UserPermission)) { return false;}
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserPermission)) {
+            return false;
+        }
         return id != null && id.equals(((UserPermission) o).getId());
     }
-    
+
     @Override
     public int hashCode() {
         return getClass().hashCode();
