@@ -12,8 +12,6 @@ public interface UserPermissionRepository {
 
     List<UserPermission> getUserPermissionsByUserId(int userId);
     
-    List<Permission> getPermissionsByUserId(int id);
-    
     List<String> getPermissionStringsByUserId(int id);
 
     List<UserPermission> getUserPermissionsByPermissionId(int permissionId);
