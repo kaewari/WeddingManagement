@@ -33,11 +33,6 @@ public class OrderServiceImpl implements OrderService {
     
     @Autowired
     private HallPriceRepository hallPriceRepo;
-    
-    @Override
-    public List<Order> findAll() {
-        return orderRepo.findAll();
-    }
 
     @Override
     public Order findById(int id) {

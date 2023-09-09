@@ -417,4 +417,14 @@ public class OrderRepositoryImpl implements OrderRepository {
             return false;
         }
     }
+
+    @Override
+    public List<Order> searchOrders(Map<String, Object> findArgs) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrdersByCustomerId(int customerId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

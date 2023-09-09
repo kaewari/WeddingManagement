@@ -73,8 +73,11 @@ public class User implements Serializable {
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<UserInGroup> userInGroupSet;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "employee")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "staff")
     private Set<Order> employeeOrderSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private Set<Order> customerOrderSet;
+    
+    public User (int id) {}
+    public User() {}
 }

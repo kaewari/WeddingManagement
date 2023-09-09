@@ -44,7 +44,7 @@ public class Order implements Serializable {
     private String receiptNo;
 
     @Column(nullable = true)
-    private String padVia;
+    private String paidVia;
     
     @Column(nullable = true)
     private String note;
@@ -58,7 +58,7 @@ public class Order implements Serializable {
     private User customer;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "employeeId")
+    @JoinColumn(name = "userId")
     private User staff;
     
     @JsonIgnore

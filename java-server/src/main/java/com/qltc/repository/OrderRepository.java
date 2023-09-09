@@ -16,6 +16,7 @@ public interface OrderRepository {
     public List<Order> getOrders();
 
     public Order findById(int id);
+    public List<Order> find(Map<String, Object> findArgs);
 
     List<Order> getOrdersByEmployeeId(int employeeId);
 

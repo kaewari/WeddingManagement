@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Map;
 
 public interface OrderService {
-    public List<Order> findAll();
     public Order findById(int id);
     public List<Order> find(Map<String, Object> findArgs);
     public boolean addOrUpdate(Order oder);
     public boolean deleteById(int id);
     public boolean delete(Order oder);
+    
+    
+    
     // Wedding
     public boolean addWeddingToOrder(Order order, Wedding wedding);
     public boolean removeWeddingFromOrder(Order order, Wedding wedding);
