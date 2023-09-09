@@ -13,11 +13,17 @@ import java.util.Map;
 
 public interface OrderRepository {
 
-    public List<Order> findAll();
+    public List<Order> getOrders();
 
     public Order findById(int id);
 
-    public List<Order> find(Map<String, Object> findArgs);
+    List<Order> getOrdersByEmployeeId(int employeeId);
+
+    List<Order> getOrdersByCustomerId(int customerId);
+
+    public boolean getOrderByReceiptNumber(String receiptNumber);
+
+    public List<Order> searchOrders(Map<String, Object> findArgs);
 
     public boolean addOrUpdateOrder(Order order);
     
@@ -54,4 +60,7 @@ public interface OrderRepository {
     
     //calculate
     public double calculateTotal(int orderId);
+    public boolean deleteOrdersByCustomerId(int customerId);
+
+    //count, stats
 }

@@ -60,7 +60,8 @@ public class Dish implements Serializable {
     @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Boolean isAvailable = true;
-    
+    @Transient
+    private Double total;
     @JsonIgnore
     @Transient
     private MultipartFile file;
@@ -69,12 +70,12 @@ public class Dish implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dish", fetch = FetchType.LAZY
             , orphanRemoval = true)
     private Set<DishInBranch> dishInBranches = new HashSet<>();
-    
+
     public void addDishInBranch(DishInBranch dishInBranch) {
         dishInBranches.add(dishInBranch);
         dishInBranch.setDish(this);
     }
-    
+
     public void removeDishInBranch(DishInBranch dishInBranch) {
         dishInBranches.remove(dishInBranch);
         dishInBranch.setDish(null);

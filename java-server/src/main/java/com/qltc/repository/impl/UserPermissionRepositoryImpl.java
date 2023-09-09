@@ -57,7 +57,7 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
     }
 
     @Override
-    public UserPermission addUserPermissionsByUserId(UserPermission userPermisison) {
+    public UserPermission addUserPermissions(UserPermission userPermisison) {
 
         try {
             Session s = this.factory.getObject().getCurrentSession();

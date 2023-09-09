@@ -61,7 +61,7 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
         if (!userGroupPermissionList.isEmpty()) {
             List<Permission> permissions = new LinkedList<>();
             userGroupPermissionList.forEach((UserGroupPermission userGroupPermission) -> {
-                if (userGroupPermission.getAllows() == allows) {
+                if (userGroupPermission.getAllow() == allows) {
                     permissions.add(userGroupPermission.getPermission());
                 }
             });
@@ -112,6 +112,7 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
 
     @Override
     public boolean addUserToGroup(User user, UserGroup userGroup) {
+
         UserInGroup userInGroup = getUserExistingInGroup(user, userGroup);
         if (userInGroup != null) {
             return false;
@@ -144,7 +145,8 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
         }
     }
 
-    private UserInGroup getUserExistingInGroup(User user, UserGroup userGroup) {
+    @Override
+    public UserInGroup getUserExistingInGroup(User user, UserGroup userGroup) {
         Session session = sessionFactory.getObject().getCurrentSession();
         try {
             Query query = session.createQuery("From UserInGroup uig Where"
@@ -157,4 +159,24 @@ public class UserGroupRepositoryImpl implements UserGroupRepository {
         }
     }
 
+    @Override
+    public UserGroup findByName(String name) {
+        Session session = sessionFactory.getObject().getCurrentSession();
+        Query query = session.createQuery("FROM UserGroup WHERE name=:n");
+        query.setParameter("n", name);
+        return (UserGroup) query.getSingleResult();
+    }
+
+    @Override
+    public List<UserGroupPermission> findByGroupId(int groupId) {
+        Session session = sessionFactory.getObject().getCurrentSession();
+        Query query = session.createQuery("From UserGroupPermission Where groupId=?1");
+        query.setParameter(1, groupId);
+        return query.getResultList();
+//        try {
+//
+//        } catch (Exception e) {
+//            return null;
+//        }
+    }
 }

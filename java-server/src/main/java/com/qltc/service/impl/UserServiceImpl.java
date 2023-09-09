@@ -12,7 +12,6 @@ import com.qltc.repository.UserPermissionRepository;
 import com.qltc.repository.UserRepository;
 import com.qltc.service.UserService;
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +19,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,6 +43,8 @@ public class UserServiceImpl implements UserService {
     private Cloudinary cloudinary;
     @Autowired
     private BCryptPasswordEncoder passEncoder;
+    @Autowired
+    private Environment env;
 
     @Override
     public User getUserById(int id) {
@@ -80,16 +82,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addUser(User u, MultipartFile file) {
-        User user = new User();
-        user.setAddress(u.getAddress());
-        user.setPhone(u.getPhone());
-        user.setEmail(u.getEmail());
-        user.setName(u.getName());
-        user.setPassword(this.passEncoder.encode(u.getPassword()));
-        user.setIdentityNumber(u.getIdentityNumber());
-        user.setIsActive(false);
-        user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+    public User addUser(User user, MultipartFile file) {
         if (file != null) {
             try {
                 Map res = this.cloudinary.uploader().upload(file.getBytes(),
@@ -98,8 +91,9 @@ public class UserServiceImpl implements UserService {
             } catch (IOException ex) {
                 Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            user.setAvatar(this.env.getProperty("cloudinary.default_image"));
         }
-
         return this.userRepo.addUser(user);
     }
 

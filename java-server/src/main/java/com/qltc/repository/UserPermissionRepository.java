@@ -22,7 +22,7 @@ public interface UserPermissionRepository {
 
     List<Permission> getPermissionsOfUserByUserId(int userId);
 
-    UserPermission addUserPermissionsByUserId(UserPermission userPermisison);
+    UserPermission addUserPermissions(UserPermission userPermisison);
 
     boolean updateUserPermissionById(UserPermission userPermisison);
 
