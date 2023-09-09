@@ -44,7 +44,6 @@ public class Order implements Serializable {
 
     @Column(nullable = true)
     private String paidVia;
-
     @Column(nullable = true)
     private String note;
 
