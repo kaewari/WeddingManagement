@@ -46,15 +46,15 @@ const Login = () => {
         <h1 className="text-center text-info">ĐĂNG NHẬP NGƯỜI DÙNG</h1>
 
         <Form onSubmit={login}>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="form.name">
                 <Form.Label>Tên đăng nhập</Form.Label>
                 <Form.Control value={name} onChange={e => setName(e.target.value)} type="text" placeholder="Tên đăng nhập" />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="form.password">
                 <Form.Label>Mật khẩu</Form.Label>
                 <Form.Control value={password} onChange={e => setPassword(e.target.value)} type="password" placeholder="Mật khẩu" />
             </Form.Group>
-            <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+            <Form.Group className="mb-3" controlId="form.submit">
                 <Button variant="info" type="submit">Đăng nhập</Button>
             </Form.Group>
         </Form>
