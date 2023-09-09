@@ -96,7 +96,7 @@ public class ApiUserController {
     @RequestMapping("/test/{id}")
     @CrossOrigin
     public ResponseEntity<List<Permission>> test(@PathVariable int id, Principal principal) {
-        return new ResponseEntity<>(this.userRepository.getPermissionsByUserId(id), HttpStatus.OK);
+        return new ResponseEntity<>(this.userRepository.getPermissionsOfUserByUserId(id), HttpStatus.OK);
     }
 
     @PostMapping(path = "/user/",

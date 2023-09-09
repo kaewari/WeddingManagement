@@ -5,11 +5,13 @@
 package com.qltc.filters;
 
 import com.qltc.components.JwtService;
+import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
-import com.qltc.repository.UserPermissionRepository;
+import com.qltc.service.UserPermissionService;
 import com.qltc.service.UserService;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -37,7 +39,7 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
     @Autowired
     private UserService userService;
     @Autowired
-    private UserPermissionRepository userPermissionRepo;
+    private UserPermissionService permissionService;
 //    @Autowired
 //    private UsersGroupService usersGroupService;
 
