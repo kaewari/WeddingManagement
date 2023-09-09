@@ -18,39 +18,39 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OrderServiceImpl implements OrderService {
-    
+
     @Autowired
     private OrderRepository orderRepo;
-    
+
     @Autowired
     private WeddingRepository weddingRepo;
-    
+
     @Autowired
     private WeddingServiceRepository weddingServiceRepo;
-    
+
     @Autowired
     private WeddingServicePriceRepository weddingServicePriceRepo;
-    
+
     @Autowired
     private HallPriceRepository hallPriceRepo;
-    
+
     @Override
-    public List<Order> findAll() {
-        return orderRepo.findAll();
+    public List<Order> getOrders() {
+        return orderRepo.getOrders();
     }
 
     @Override
-    public Order findById(int id) {
-        return orderRepo.findById(id);
+    public Order getOrderById(int id) {
+        return orderRepo.getOrderById(id);
     }
 
     @Override
-    public List<Order> find(Map<String, Object> findArgs) {
-        return orderRepo.find(findArgs);
+    public List<Order> searchOrders(Map<String, Object> findArgs) {
+        return orderRepo.searchOrders(findArgs);
     }
 
     @Override
-    public boolean addOrUpdate(Order oder) {
+    public boolean addOrUpdateOrder(Order oder) {
         return orderRepo.addOrUpdateOrder(oder);
     }
 
@@ -95,7 +95,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean removeOrderDetailsService(Order order, List<OrderDetailsService> orderDetailsServices) {
-            return orderRepo.removeServicePriceFromOrder(order, orderDetailsServices);
+        return orderRepo.removeServicePriceFromOrder(order, orderDetailsServices);
     }
 
     @Override
@@ -170,15 +170,43 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public double calculateTotalOfOrder(Order order) {
-        if (order == null) return 0;
+        if (order == null) {
+            return 0;
+        }
         return orderRepo.calculateTotal(order.getId());
     }
 
     @Override
     public double calculateTotalOfOrderById(int orderId) {
-        Order order = findById(orderId);
-        if (order == null) return 0;
+        Order order = getOrderById(orderId);
+        if (order == null) {
+            return 0;
+        }
         return orderRepo.calculateTotal(orderId);
     }
-    
+
+    @Override
+    public List<Order> getOrdersByEmployeeId(int employeeId) {
+        return this.orderRepo.getOrdersByEmployeeId(employeeId);
+    }
+
+    @Override
+    public List<Order> getOrdersByCustomerId(int customerId) {
+        return this.orderRepo.getOrdersByCustomerId(customerId);
+    }
+
+    @Override
+    public boolean getOrderByReceiptNumber(String receiptNumber) {
+        return this.orderRepo.getOrderByReceiptNumber(receiptNumber);
+    }
+
+    @Override
+    public boolean deleteOrderById(int orderId) {
+        return this.orderRepo.deleteOrderById(orderId);
+    }
+
+    @Override
+    public boolean deleteOrdersByCustomerId(int customerId) {
+        return this.orderRepo.deleteOrderById(customerId);
+    }
 }

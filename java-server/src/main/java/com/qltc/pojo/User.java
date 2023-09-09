@@ -35,23 +35,23 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-    
+
     @Basic(optional = false)
     private String name;
-    
+
     @Basic(optional = false)
     private String email;
 
     @Basic(optional = false)
     private String phone;
-    
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Basic(optional = false)
     private String password;
-    
+
     @Basic(optional = false)
     private String identityNumber;
-    
+
     @Basic(optional = false)
     private String address;
     private String avatar = null;
@@ -61,15 +61,14 @@ public class User implements Serializable {
     private Date createdDate = new Timestamp(System.currentTimeMillis());
     @Transient
     private MultipartFile file;
-    
+
 //    @JsonIgnore
 //    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
 //    private Set<Employee> employeeSet;
-    
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "userId")
     private Employee employee;
-    
+
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<UserInGroup> userInGroupSet;
@@ -77,4 +76,11 @@ public class User implements Serializable {
     private Set<Order> employeeOrderSet;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private Set<Order> customerOrderSet;
+
+    public User(int userId) {
+        this.id = userId;
+    }
+
+    public User() {
+    }
 }

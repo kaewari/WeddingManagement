@@ -1,7 +1,7 @@
 package com.qltc.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.qltc.components.JwtService;
-import com.qltc.pojo.Employee;
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
 import com.qltc.pojo.UserGroup;
@@ -13,7 +13,6 @@ import com.qltc.service.UserPermissionService;
 import com.qltc.service.UserService;
 import java.security.Principal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,7 +62,7 @@ public class ApiUserController {
 
     @PostMapping(path = "/login/", produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<Object> login(@RequestBody User user) {
+    public ResponseEntity<Object> login(@RequestBody User user) throws JsonProcessingException {
         try {
             if (!this.userService.authUser(user.getName(), user.getPassword())) {
                 return new ResponseEntity<>("Wrong name or password", HttpStatus.BAD_REQUEST);
@@ -71,10 +70,11 @@ public class ApiUserController {
                 String token = this.jwtService.generateTokenLogin(user.getName());
                 User userInfo = userService.getUserByName(user.getName());
                 String role = "Customer";
-                if (userInfo.getEmployee() != null) role = userInfo.getEmployee().getPosition();
+                if (userInfo.getEmployee() != null) {
+                    role = userInfo.getEmployee().getPosition();
+                }
                 List<String> permissions = userService.getPermissions(userInfo.getId());
                 JSONObject resToken = new JSONObject();
-                resToken.put("user", userInfo);
                 resToken.put("role", role);
                 resToken.put("permissions", permissions);
                 resToken.put("access_token", token);
@@ -85,11 +85,13 @@ public class ApiUserController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @GetMapping("/get_authorities")
     @ResponseStatus(HttpStatus.OK)
     public Set getAuthorities(Principal principal) {
-        if (principal == null) return new HashSet();
+        if (principal == null) {
+            return new HashSet();
+        }
         String name = principal.getName();
         User user = userService.getUserByName(name);
         List<String> userPermission = userService.getPermissions(user.getId());
@@ -288,25 +290,31 @@ public class ApiUserController {
             return new ResponseEntity<>("Delete Failure", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     @PostMapping("/{userId}/grant-permission")
     @CrossOrigin
     // {"allows": "Boolean", "permissionIds": "Array[]"}
     public ResponseEntity grantPermssionForUser(@PathVariable("userId") int id,
             @RequestBody Map<String, Object> request) {
         User existing = userService.getUserById(id);
-        if (existing == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
-        
+        if (existing == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
         Boolean isGranted = (Boolean) request.get("allows");
-        if (isGranted == null) isGranted = true;
+        if (isGranted == null) {
+            isGranted = true;
+        }
         List<Integer> permissionIds = (List<Integer>) request.get("permissionIds");
         List<Permission> permissions = new LinkedList<>();
         for (Integer pId : permissionIds) {
             Permission permission = permissionService.findById(pId);
-            if (permission == null) return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            if (permission == null) {
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
             permissions.add(permission);
         }
-        
+
         if (isGranted && permissionService.grantPermissionForUser(existing, permissions)) {
             return new ResponseEntity(HttpStatus.ACCEPTED);
         } else if (!isGranted && permissionService.denyPermissionForUser(existing, permissions)) {
@@ -315,7 +323,7 @@ public class ApiUserController {
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
-    
+
     @DeleteMapping("/{userId}/reset-permission")
     @CrossOrigin
     public ResponseEntity resetPermission(@PathVariable("userId") int id) {

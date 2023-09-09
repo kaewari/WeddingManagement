@@ -13,18 +13,15 @@ import com.qltc.pojo.OrderDetailsService;
 import com.qltc.pojo.User;
 import com.qltc.pojo.Wedding;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import org.cloudinary.json.JSONArray;
 import org.cloudinary.json.JSONObject;
 
-public class OrderDeserializer extends StdDeserializer<Order>{
-    
+public class OrderDeserializer extends StdDeserializer<Order> {
+
     public OrderDeserializer() {
         this(null);
     }
-    
+
     public OrderDeserializer(Class<?> vc) {
         super(vc);
     }
@@ -32,7 +29,7 @@ public class OrderDeserializer extends StdDeserializer<Order>{
     @Override
     public Order deserialize(JsonParser jp, DeserializationContext dc) throws IOException, JsonProcessingException {
         JsonNode jnode = jp.getCodec().readTree(jp);
-        
+
         Integer id = null;
         Double total = null;
         Double discount = null;
@@ -45,20 +42,20 @@ public class OrderDeserializer extends StdDeserializer<Order>{
 //        List<OrderDetailsDish> orderDetailsDishes = null;
 //        List<OrderDetailsHall> orderDetailsHalls = null;
 //        List<OrderDetailsService> orderDetailsServices = null;
-        
+
         Order newOne = new Order();
         ObjectMapper objectMapper = new ObjectMapper();
-        
+
         if (jnode.get("id") != null) {
             id = jnode.get("id").intValue();
-            newOne.setId(id); 
+            newOne.setId(id);
         }
         if (jnode.get("total") != null) {
             total = jnode.get("total").doubleValue();
             newOne.setTotal(total);
         }
         if (jnode.get("discount") != null) {
-            discount =jnode.get("discount").doubleValue();
+            discount = jnode.get("discount").doubleValue();
             newOne.setDiscount(discount);
         }
         if (jnode.get("receiptNo") != null) {
@@ -83,29 +80,33 @@ public class OrderDeserializer extends StdDeserializer<Order>{
             staffId = jnode.get("staff").intValue();
             User user = new User();
             user.setId(staffId);
-            newOne.setStaff(user);
+            newOne.setEmployee(user);
         }
         if (jnode.get("wedding") != null) {
             String weddingJsonString = jnode.get("wedding").toString();
             JSONObject json = new JSONObject(weddingJsonString);
             Wedding wedding = objectMapper.readValue(weddingJsonString, Wedding.class);
-            if (json.has("customer")) wedding.setCustomer(new User((Integer) json.getInt("customer")));
-            if (json.has("user")) wedding.setUser(new User((Integer) json.getInt("user")));
+            if (json.has("customer")) {
+                wedding.setCustomer(new User((Integer) json.getInt("customer")));
+            }
+            if (json.has("user")) {
+                wedding.setUser(new User((Integer) json.getInt("user")));
+            }
             newOne.setWedding(wedding);
         }
         if (jnode.get("orderDetailsDishes") != null) {
             String orderDetailsDishesString = jnode.get("orderDetailsDishes").toString();
             JSONArray array = new JSONArray(orderDetailsDishesString);
-            
+
             for (int index = 0; index < array.length(); index++) {
                 String orderDishString = array.get(index).toString();
                 newOne.addOrderDetailsDish(objectMapper.readValue(orderDishString, OrderDetailsDish.class));
             }
         }
-        if (jnode.get("orderDetailsHalls") != null) {            
+        if (jnode.get("orderDetailsHalls") != null) {
             String orderDetailsHallsString = jnode.get("orderDetailsHalls").toString();
             JSONArray array = new JSONArray(orderDetailsHallsString);
-            
+
             for (int index = 0; index < array.length(); index++) {
                 String orderHall = array.get(index).toString();
                 newOne.addOrderDetailsHall(objectMapper.readValue(orderHall, OrderDetailsHall.class));
@@ -114,13 +115,13 @@ public class OrderDeserializer extends StdDeserializer<Order>{
         if (jnode.get("orderDetailsServices") != null) {
             String orderDetailsServicesString = jnode.get("orderDetailsServices").toString();
             JSONArray array = new JSONArray(orderDetailsServicesString);
-            
+
             for (int index = 0; index < array.length(); index++) {
                 String orderService = array.get(index).toString();
                 newOne.addOrderDetailsService(objectMapper.readValue(orderService, OrderDetailsService.class));
             }
         }
-        
+
         return newOne;
     }
 }

@@ -18,13 +18,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
@@ -47,54 +44,59 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Order findById(int id) {
+    public Order getOrderById(int id) {
         Session session = sessionFactory.getObject().getCurrentSession();
         return session.get(Order.class, id);
     }
 
     @Override
-    // find({"fromDateTime"="Date", "toDateTime"="Date", "isWedding"="boolean", "pageIndex": "Integer", "pageSize": "Integer"})
-    public List<Order> find(Map<String, Object> findArgs) {
+    // sreachOrders({"fromDateTime"="Date", "toDateTime"="Date", "isWedding"="boolean"})
+    public List<Order> searchOrders(Map<String, Object> findArgs) {
         Session session = sessionFactory.getObject().getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Order> query = criteriaBuilder.createQuery(Order.class);
         Root orderRoot = query.from(Order.class);
-
-        Date fromDateTime = (Date) findArgs.get("fromDateTime");
-        Date toDateTime = (Date) findArgs.get("toDateTime");
-        Boolean isWedding = (Boolean) findArgs.get("isWedding");
-
-        List<Predicate> predicates = new ArrayList<>();
-
-        if (fromDateTime != null) {
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(orderRoot.<Date>get("createdDate"), fromDateTime));
-        }
-
-        if (toDateTime != null) {
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.<Date>get("createdDate"), toDateTime));
-        } else { //if do not declare, make to present
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.<Date>get("createdDate"), new Date()));
-        }
-
-//        if (isWedding != null) {
-//            if (!isWedding) {
-//                predicates.add(joining.get("wedding").isNull());
-//            } else {
-//                predicates.add(joining.get("wedding").isNotNull());
-//            }
-//        }
-
-        query.where(predicates.toArray(new Predicate[0]));
         query.select(orderRoot);
-        Query q = session.createQuery(query);
-        
-        if (findArgs.get("pageIndex") != null && findArgs.get("pageSize") != null) {
-            int pageIndex = (Integer) findArgs.get("pageIndex");
-            int pageSize = (Integer) findArgs.get("pageSize");
-            q.setFirstResult((pageIndex - 1) * pageSize);
-            q.setMaxResults(pageSize);
+//        Root dishDetailRoot = query.from(OrderDetailsDish.class);
+//        Join<?, ?> joining = orderRoot.join("id");
+//        query.where(criteriaBuilder.equal(joining.get("id"), dishDetailRoot.get("orderId")));
+//
+        List<Predicate> predicates = new ArrayList<>();
+        String fromDateTime = null;
+        String toDateTime = null;
+        if (findArgs != null) {
+            try {
+                fromDateTime = findArgs.get("fromDateTime").toString();
+            } catch (Exception e) {
+            }
+            try {
+                toDateTime = findArgs.get("toDateTime").toString();
+            } catch (Exception e) {
+            }
         }
-
+        if (fromDateTime != null) {
+            try {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(orderRoot.get("createdDate"), dateFormat.parse(fromDateTime)));
+            } catch (ParseException ex) {
+                Logger.getLogger(OrderRepositoryImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if (toDateTime != null) {
+            try {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.get("createdDate"), dateFormat.parse(toDateTime)));
+            } catch (ParseException ex) {
+                Logger.getLogger(OrderRepositoryImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else { //if do not declare, make to present
+            Date currentDate = new Date();
+            try {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.get("createdDate"), dateFormat.parse(currentDate.toString())));
+            } catch (ParseException ex) {
+                Logger.getLogger(OrderRepositoryImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        query.where(predicates.toArray(Predicate[]::new));
+        Query q = session.createQuery(query);
         return q.getResultList();
     }
 
@@ -113,261 +115,43 @@ public class OrderRepositoryImpl implements OrderRepository {
             return false;
         }
     }
-    
-    @Override
-    public boolean addWeddingToOrder(Order order, Wedding wedding) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            order.setWedding(wedding);
-            session.save(order);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
 
     @Override
     public boolean deleteOrderById(int id) {
-        Order order = findById(id);
-        if (order == null) return false;
-        Session session = sessionFactory.getObject().getCurrentSession();
-        return deleteOrder(order);
-    }
-
-    @Override
-    public boolean deleteOrder(Order order) {
-        Session session = sessionFactory.getObject().getCurrentSession();
         try {
-            session.delete(order);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public OrderDetailsDish getOrderDetailsDishById(int id) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        return session.get(OrderDetailsDish.class, id);
-    }
-
-    @Override
-    public boolean addOrUpdateOrderDish(OrderDetailsDish orderDetailsDish) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            if (orderDetailsDish.getId() == null) {
-                session.save(orderDetailsDish);
-            } else {
-                session.update(orderDetailsDish);
+            Session session = sessionFactory.getObject().getCurrentSession();
+            try {
+                Order order = getOrderById(id);
+                if (order != null) {
+                    session.delete(order);
+                }
+            } catch (NoResultException nre) {
+                return false;
             }
             return true;
-        } catch (HibernateException e) {
+        } catch (HibernateException he) {
             return false;
         }
     }
 
     @Override
-    public boolean deleteOrderDishById(int id) {
-        OrderDetailsDish existing = getOrderDetailsDishById(id);
-        if (existing == null) return false;
-        return deleteOrderDish(existing);
-    }
-
-    @Override
-    public boolean deleteOrderDish(OrderDetailsDish orderDetailsDish) {
-        Session session = sessionFactory.getObject().getCurrentSession();
+    public boolean deleteOrdersByCustomerId(int customerId) {
         try {
-            session.delete(orderDetailsDish);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public OrderDetailsService getOrderDetailsServiceById(int id) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        return session.get(OrderDetailsService.class, id);
-    }
-
-    @Override
-    public boolean addOrUpdateOrderService(OrderDetailsService orderDetailsService) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            if (orderDetailsService.getId() == null) {
-                session.save(orderDetailsService);
-            } else {
-                session.update(orderDetailsService);
+            Session session = sessionFactory.getObject().getCurrentSession();
+            try {
+                List<Order> orders = getOrdersByCustomerId(customerId);
+                if (orders != null) {
+                    orders.forEach(o -> {
+                        session.delete(o);
+                    });
+                }
+            } catch (NoResultException nre) {
+                return false;
             }
             return true;
-        } catch (HibernateException e) {
+        } catch (HibernateException he) {
             return false;
         }
-    }
-
-    @Override
-    public boolean deleteOrderServiceById(int id) {
-        OrderDetailsService existing = getOrderDetailsServiceById(id);
-        if (existing == null) return false;
-        return deleteOrderService(existing);
-    }
-
-    @Override
-    public boolean deleteOrderService(OrderDetailsService orderDetailsService) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            session.delete(orderDetailsService);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public OrderDetailsHall getOrderDetailsHallById(int id) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        return session.get(OrderDetailsHall.class, id);
-    }
-
-    @Override
-    public boolean addOrUpdateOrderHallPrice(OrderDetailsHall orderDetailsHall) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            if (orderDetailsHall.getId() == null) {
-                session.save(orderDetailsHall);
-            } else {
-                session.update(orderDetailsHall);
-            }
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-
-    @Override
-    public boolean deleteOrderHallPriceById(int id) {
-        OrderDetailsHall existing = getOrderDetailsHallById(id);
-        if (existing == null) return false;
-        return deleteOrderHallPrice(existing);
-    }
-
-    @Override
-    public boolean deleteOrderHallPrice(OrderDetailsHall orderDetailsHall) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            session.delete(orderDetailsHall);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-    
-    @Override
-    public boolean addDishToOrder(Order order, List<OrderDetailsDish> orderDetailsDishes) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            for (OrderDetailsDish orderDish : orderDetailsDishes) {
-                order.addOrderDetailsDish(orderDish);
-            }
-            session.save(order);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-    
-    @Override
-    public boolean addServicePriceToOrder(Order order, List<OrderDetailsService> orderDetailsServices) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            for (OrderDetailsService orderService : orderDetailsServices) {
-                order.addOrderDetailsService(orderService);
-            }
-            session.save(order);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-    
-    @Override
-    public boolean addHallPriceToOrder(Order order, List<OrderDetailsHall> orderDetailsHalls) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        try {
-            for (OrderDetailsHall orderHall : orderDetailsHalls) {
-                order.addOrderDetailsHall(orderHall);
-            }
-            session.save(order);
-            return true;
-        } catch (HibernateException e) {
-            return false;
-        }
-    }
-    
-    @Override
-    @Transactional
-    public boolean removeDishFromOrder(Order order, List<OrderDetailsDish> orderDetailsDishes){
-        Session session = sessionFactory.getObject().getCurrentSession();
-        Transaction tx = session.getTransaction();
-        try {
-            for (OrderDetailsDish orderDish : orderDetailsDishes) {
-                order.removeOrderDetailsDish(orderDish);
-                session.delete(orderDish);
-            }
-            tx.commit();
-            return true;
-        } catch (HibernateException e) {
-            tx.rollback();
-            return false;
-        }
-    }
-    
-    @Override
-    @Transactional
-    public boolean removeServicePriceFromOrder(Order order, List<OrderDetailsService> orderDetailsServices) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        Transaction tx = session.getTransaction();
-        try {
-            for (OrderDetailsService orderService : orderDetailsServices) {
-                order.removeOrderDetailsService(orderService);
-                session.delete(orderService);
-            }
-            tx.commit();
-            return true;
-        } catch (HibernateException e) {
-            tx.rollback();
-            return false;
-        }
-    }
-
-    @Override
-    @Transactional
-    public boolean removeHallPriceFromOrder(Order order, List<OrderDetailsHall> orderDetailsHalls) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        Transaction tx = session.getTransaction();
-        try {
-            for (OrderDetailsHall orderHall : orderDetailsHalls) {
-                order.removeOrderDetailsHall(orderHall);
-                session.delete(orderHall);
-            }
-            tx.commit();
-            return true;
-        } catch (HibernateException e) {
-            tx.rollback();
-            return false;
-        }
-    }
-
-    @Override
-    public double calculateTotal(int orderId) {
-        Session session = sessionFactory.getObject().getCurrentSession();
-        String queryString = "SELECT SUM(total) FROM ("
-            + "(SELECT SUM(od.quantity * od.price * (1-  od.discount)) as total FROM order_dish_details od WHERE orderId = :orderId) UNION"
-            + "(SELECT SUM(oh.price * (1 - oh.discount)) as total FROM order_halls_details oh WHERE orderId = :orderId) UNION"
-            + "(SELECT SUM(os.price * os.quantity) as total FROM order_services_details os WHERE orderId = :orderId)) TotalPriceTable";
-        Query query = session.createNativeQuery(queryString);
-        query.setParameter("orderId", orderId);
-        return (Double) query.getSingleResult();
     }
 
     @Override
@@ -416,5 +200,110 @@ public class OrderRepositoryImpl implements OrderRepository {
         } catch (NoResultException nre) {
             return false;
         }
+    }
+
+    @Override
+    public boolean addWeddingToOrder(Order order, Wedding wedding) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrder(Order order) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean addDishToOrder(Order order, List<OrderDetailsDish> orderDetailsDishes) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean addServicePriceToOrder(Order order, List<OrderDetailsService> orderDetailsServices) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean addHallPriceToOrder(Order order, List<OrderDetailsHall> orderDetailsHalls) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean removeDishFromOrder(Order order, List<OrderDetailsDish> orderDetailsDishes) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean removeServicePriceFromOrder(Order order, List<OrderDetailsService> orderDetailsServices) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean removeHallPriceFromOrder(Order order, List<OrderDetailsHall> orderDetailsHalls) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public OrderDetailsDish getOrderDetailsDishById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean addOrUpdateOrderDish(OrderDetailsDish orderDetailsDish) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrderDishById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrderDish(OrderDetailsDish orderDetailsDish) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public OrderDetailsService getOrderDetailsServiceById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean addOrUpdateOrderService(OrderDetailsService orderDetailsService) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrderServiceById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrderService(OrderDetailsService orderDetailsService) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public OrderDetailsHall getOrderDetailsHallById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean addOrUpdateOrderHallPrice(OrderDetailsHall orderDetailsHall) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrderHallPriceById(int id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public boolean deleteOrderHallPrice(OrderDetailsHall orderDetailsHall) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    @Override
+    public double calculateTotal(int orderId) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

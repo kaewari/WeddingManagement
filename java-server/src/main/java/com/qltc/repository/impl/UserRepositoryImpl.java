@@ -111,13 +111,12 @@ public class UserRepositoryImpl implements UserRepository {
     public List<String> getPermissionsById(int userId) {
         Session session = factory.getObject().getCurrentSession();
         String queryString = "SELECT distinct(p.value) FROM permissions p WHERE p.id IN"
-        + "(SELECT ugp.permissionId FROM user_in_group uig JOIN user_group_permission ugp ON uig.groupId = ugp.groupId WHERE uig.userId = :userId AND ugp.allows = 1)"
-        + "OR p.id IN"
-        + "(SELECT up.permissionId FROM user_permission up WHERE up.userId = :userId AND up.allows = 1)";
+                + "(SELECT ugp.permissionId FROM user_in_group uig JOIN user_group_permission ugp ON uig.groupId = ugp.groupId WHERE uig.userId = :userId AND ugp.allow = 1)"
+                + "OR p.id IN"
+                + "(SELECT up.permissionId FROM user_permission up WHERE up.userId = :userId AND up.allow = 1)";
         Query query = session.createNativeQuery(queryString);
         query.setParameter("userId", userId);
         return query.getResultList();
     }
-    
-    
+
 }

@@ -2,7 +2,6 @@ package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,25 +32,25 @@ public class Order implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-    
+
     @Basic(optional = false)
     private double total;
-    
+
     @Basic(optional = false)
     private double discount = 0;
-   
+
     @Column(nullable = true)
     private String receiptNo;
 
     @Column(nullable = true)
-    private String padVia;
-    
+    private String paidVia;
+
     @Column(nullable = true)
     private String note;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
-    
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "customerId", nullable = true)
@@ -59,22 +58,21 @@ public class Order implements Serializable {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "employeeId")
-    private User staff;
-    
+    private User employee;
+
     @JsonIgnore
-    @OneToOne(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Wedding wedding;
-    
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsDish> orderDetailsDishes = new HashSet<>();
-    
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsHall> orderDetailsHalls = new HashSet<>();
-    
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsService> orderDetailsServices = new HashSet<>();
-    
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -90,37 +88,37 @@ public class Order implements Serializable {
     public int hashCode() {
         return getClass().hashCode();
     }
-    
+
     public void setWedding(Wedding wedding) {
         this.wedding = wedding;
         wedding.setOrder(this);
     }
-    
+
     public void addOrderDetailsDish(OrderDetailsDish orderDetailsDish) {
         orderDetailsDishes.add(orderDetailsDish);
         orderDetailsDish.setOrder(this);
     }
-    
+
     public void removeOrderDetailsDish(OrderDetailsDish orderDetailsDish) {
         orderDetailsDishes.remove(orderDetailsDish);
         orderDetailsDish.setOrder(null);
     }
-    
+
     public void addOrderDetailsService(OrderDetailsService orderDetailsService) {
         orderDetailsServices.add(orderDetailsService);
         orderDetailsService.setOrder(this);
     }
-    
+
     public void removeOrderDetailsService(OrderDetailsService orderDetailsService) {
         orderDetailsServices.remove(orderDetailsService);
         orderDetailsService.setOrder(null);
     }
-    
+
     public void addOrderDetailsHall(OrderDetailsHall orderDetailsHall) {
         orderDetailsHalls.add(orderDetailsHall);
         orderDetailsHall.setOrder(this);
     }
-    
+
     public void removeOrderDetailsHall(OrderDetailsHall orderDetailsHall) {
         orderDetailsHalls.remove(orderDetailsHall);
         orderDetailsHall.setOrder(null);
