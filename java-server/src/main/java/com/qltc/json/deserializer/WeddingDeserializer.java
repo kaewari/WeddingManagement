@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.qltc.pojo.Order;
 import com.qltc.pojo.User;
 import com.qltc.pojo.Wedding;
 import java.io.IOException;
@@ -37,6 +38,7 @@ public class WeddingDeserializer extends StdDeserializer<Wedding>{
         Date celebrityDate = null;
         Integer customerId = null;
         Integer userId = null;
+        Integer orderId = null;
         
         Wedding newOne = new Wedding();
         
@@ -86,15 +88,19 @@ public class WeddingDeserializer extends StdDeserializer<Wedding>{
         }
         if (jNode.get("customer") != null) {
             customerId = jNode.get("customer").intValue();
-            User customer = new User();
-            customer.setId(customerId);
+            User customer = new User(customerId);
             newOne.setCustomer(customer);
         }
         if (jNode.get("user") != null) {
             userId = jNode.get("user").intValue();
-            User user = new User();
-            user.setId(userId);
+            User user = new User(userId);
             newOne.setUser(user);
+        }
+        if (jNode.get("order") != null) {
+            orderId = jNode.get("order").intValue();
+            Order order = new Order();
+            order.setId(orderId);
+            newOne.setOrder(order);
         }
         
         return newOne;

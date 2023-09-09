@@ -1,5 +1,6 @@
 package com.qltc.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
@@ -45,7 +46,7 @@ public class WeddingService implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "service", orphanRemoval = true)
     private Set<WeddingServicePrice> prices = new HashSet<>();
     
-    @JsonView(JsonMarkup.FullData.class)
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifiedBy")
     private User user;

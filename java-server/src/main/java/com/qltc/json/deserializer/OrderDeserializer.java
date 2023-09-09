@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.node.IntNode;
 import com.qltc.pojo.Order;
 import com.qltc.pojo.OrderDetailsDish;
 import com.qltc.pojo.OrderDetailsHall;
@@ -18,6 +17,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import org.cloudinary.json.JSONArray;
+import org.cloudinary.json.JSONObject;
 
 public class OrderDeserializer extends StdDeserializer<Order>{
     
@@ -87,44 +87,38 @@ public class OrderDeserializer extends StdDeserializer<Order>{
         }
         if (jnode.get("wedding") != null) {
             String weddingJsonString = jnode.get("wedding").toString();
+            JSONObject json = new JSONObject(weddingJsonString);
             Wedding wedding = objectMapper.readValue(weddingJsonString, Wedding.class);
+            if (json.has("customer")) wedding.setCustomer(new User((Integer) json.getInt("customer")));
+            if (json.has("user")) wedding.setUser(new User((Integer) json.getInt("user")));
             newOne.setWedding(wedding);
         }
         if (jnode.get("orderDetailsDishes") != null) {
             String orderDetailsDishesString = jnode.get("orderDetailsDishes").toString();
             JSONArray array = new JSONArray(orderDetailsDishesString);
-            List<OrderDetailsDish> orderDetailsDishes = new LinkedList<>();
             
             for (int index = 0; index < array.length(); index++) {
-                String orderDishString = array.get(0).toString();
-                orderDetailsDishes.add(objectMapper.readValue(orderDishString, OrderDetailsDish.class));
+                String orderDishString = array.get(index).toString();
+                newOne.addOrderDetailsDish(objectMapper.readValue(orderDishString, OrderDetailsDish.class));
             }
-            
-            newOne.setOrderDetailsDishes(new HashSet<>(orderDetailsDishes));   
         }
         if (jnode.get("orderDetailsHalls") != null) {            
             String orderDetailsHallsString = jnode.get("orderDetailsHalls").toString();
             JSONArray array = new JSONArray(orderDetailsHallsString);
-            List<OrderDetailsHall> orderDetailsHalls = new LinkedList<>();
             
             for (int index = 0; index < array.length(); index++) {
-                String orderHall = array.get(0).toString();
-                orderDetailsHalls.add(objectMapper.readValue(orderHall, OrderDetailsHall.class));
+                String orderHall = array.get(index).toString();
+                newOne.addOrderDetailsHall(objectMapper.readValue(orderHall, OrderDetailsHall.class));
             }
-            
-            newOne.setOrderDetailsHalls(new HashSet<>(orderDetailsHalls));
         }
         if (jnode.get("orderDetailsServices") != null) {
             String orderDetailsServicesString = jnode.get("orderDetailsServices").toString();
             JSONArray array = new JSONArray(orderDetailsServicesString);
-            List<OrderDetailsService> orderDetailsServices = new LinkedList<>();
             
             for (int index = 0; index < array.length(); index++) {
-                String orderService = array.get(0).toString();
-                orderDetailsServices.add(objectMapper.readValue(orderService, OrderDetailsService.class));
+                String orderService = array.get(index).toString();
+                newOne.addOrderDetailsService(objectMapper.readValue(orderService, OrderDetailsService.class));
             }
-            
-            newOne.setOrderDetailsServices(new HashSet<>(orderDetailsServices));
         }
         
         return newOne;

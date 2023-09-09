@@ -31,6 +31,7 @@ public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
     private Integer id;
     
     @Basic(optional = false)
@@ -52,21 +53,25 @@ public class Order implements Serializable {
     private Date createdDate = new Date();
     
     @JsonIgnore
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "customerId")
+    @ManyToOne
+    @JoinColumn(name = "customerId", nullable = true)
     private User customer;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "employeeId")
     private User staff;
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @JsonIgnore
+    @OneToOne(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true)
+    private Wedding wedding;
+    
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsDish> orderDetailsDishes = new HashSet<>();
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsHall> orderDetailsHalls = new HashSet<>();
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsService> orderDetailsServices = new HashSet<>();
     
     
@@ -84,6 +89,11 @@ public class Order implements Serializable {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+    
+    public void setWedding(Wedding wedding) {
+        this.wedding = wedding;
+        wedding.setOrder(this);
     }
     
     public void addOrderDetailsDish(OrderDetailsDish orderDetailsDish) {

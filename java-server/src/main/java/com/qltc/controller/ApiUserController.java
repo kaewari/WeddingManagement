@@ -1,6 +1,7 @@
 package com.qltc.controller;
 
 import com.qltc.components.JwtService;
+import com.qltc.pojo.Employee;
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
 import com.qltc.pojo.UserGroup;
@@ -12,6 +13,9 @@ import com.qltc.service.UserPermissionService;
 import com.qltc.service.UserService;
 import java.security.Principal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +69,14 @@ public class ApiUserController {
                 return new ResponseEntity<>("Wrong name or password", HttpStatus.BAD_REQUEST);
             } else {
                 String token = this.jwtService.generateTokenLogin(user.getName());
+                User userInfo = userService.getUserByName(user.getName());
+                String role = "Customer";
+                if (userInfo.getEmployee() != null) role = userInfo.getEmployee().getPosition();
+                List<String> permissions = userService.getPermissions(userInfo.getId());
                 JSONObject resToken = new JSONObject();
+                resToken.put("user", userInfo);
+                resToken.put("role", role);
+                resToken.put("permissions", permissions);
                 resToken.put("access_token", token);
                 return new ResponseEntity<>(resToken.toString(), HttpStatus.OK);
             }

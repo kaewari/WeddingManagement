@@ -15,6 +15,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -61,9 +62,13 @@ public class User implements Serializable {
     @Transient
     private MultipartFile file;
     
+//    @JsonIgnore
+//    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
+//    private Set<Employee> employeeSet;
+    
     @JsonIgnore
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userId")
-    private Set<Employee> employeeSet;
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "userId")
+    private Employee employee;
     
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
