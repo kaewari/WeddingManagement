@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -35,6 +36,7 @@ public class Order implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
     private Integer id;
     
     @Basic
@@ -56,7 +58,7 @@ public class Order implements Serializable {
     private Date createdDate = new Date();
     
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "customerId", nullable = true)
     private User customer;
     
@@ -65,16 +67,17 @@ public class Order implements Serializable {
     @JoinColumn(name = "employeeId")
     private User staff;
     
-    @OneToOne(mappedBy = "order")
+    @JsonIgnore
+    @OneToOne(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true)
     private Wedding wedding;
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsDish> orderDetailsDishes = new HashSet<>();
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsHall> orderDetailsHalls = new HashSet<>();
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsService> orderDetailsServices = new HashSet<>();
     
     public Map getWhatCustomer() {
@@ -105,6 +108,11 @@ public class Order implements Serializable {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+    
+    public void setWedding(Wedding wedding) {
+        this.wedding = wedding;
+        wedding.setOrder(this);
     }
     
     public void addOrderDetailsDish(OrderDetailsDish orderDetailsDish) {

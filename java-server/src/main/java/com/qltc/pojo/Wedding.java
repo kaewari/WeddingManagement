@@ -78,7 +78,7 @@ public class Wedding implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
     
-    @OneToOne(fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "orderId")
     private Order order;
     
@@ -92,10 +92,11 @@ public class Wedding implements Serializable {
     @JoinColumn(name = "customerId", nullable = false)
     private User customer;
     
-    @JsonView(JsonMarkup.FullData.class)
+    @JsonView(JsonMarkup.FetchedData.class)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "wedding", orphanRemoval = true)
     private Set<WeddingPicture> pictures;    
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Transient
     public Map getWhatCustomer() {
         if (this.customer == null) return new HashMap<>();
@@ -106,6 +107,7 @@ public class Wedding implements Serializable {
         return userJson;
     }
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Transient
     public Map getWhatUser() {
         if (this.user == null) return new HashMap<>();

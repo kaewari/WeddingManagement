@@ -116,7 +116,7 @@ public class WeddingRepositoryImpl implements WeddingRepository {
             Wedding existing = findById(id);
             if (existing != null) {
                 session.delete(existing);
-                return false;
+                return true;
             }
             return false;
         } catch (HibernateException e) {
@@ -128,7 +128,7 @@ public class WeddingRepositoryImpl implements WeddingRepository {
     public boolean delete(Wedding wedding) {
         Session session = sessionFactory.getObject().getCurrentSession();
         try {
-            session.delete((wedding));
+            session.delete(wedding);
             return true;
         } catch (HibernateException e) {
             return false;

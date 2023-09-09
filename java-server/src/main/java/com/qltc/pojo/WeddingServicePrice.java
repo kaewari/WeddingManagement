@@ -42,7 +42,7 @@ public class WeddingServicePrice implements Serializable {
     private Boolean isAvailable = true;
     
     
-    @JsonView(JsonMarkup.FetchedData.class)
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wServiceId")
     private WeddingService service;

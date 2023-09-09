@@ -12,6 +12,7 @@ import com.qltc.pojo.Dish;
 import com.qltc.pojo.Order;
 import com.qltc.pojo.OrderDetailsDish;
 import java.io.IOException;
+import org.cloudinary.json.JSONObject;
 
 public class OrderDetailsDishDeserializer extends StdDeserializer<OrderDetailsDish>{
 
@@ -59,12 +60,14 @@ public class OrderDetailsDishDeserializer extends StdDeserializer<OrderDetailsDi
         }
         if (jnode.get("order") != null) {
             orderId = jnode.get("order").intValue();
+            
             Order order = new Order();
             order.setId(orderId);
             newOne.setOrder(order);
         }
         if (jnode.get("dish") != null) {
             dishId = jnode.get("dish").intValue();
+            
             Dish dish = new Dish();
             dish.setId(dishId);
             newOne.setDish(dish);

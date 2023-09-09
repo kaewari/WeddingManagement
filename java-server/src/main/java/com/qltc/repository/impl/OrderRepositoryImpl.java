@@ -14,6 +14,7 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
@@ -45,15 +46,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    // find({"fromDateTime"="Date", "toDateTime"="Date", "isWedding"="boolean"})
+    // find({"fromDateTime"="Date", "toDateTime"="Date", "isWedding"="boolean", "pageIndex": "Integer", "pageSize": "Integer"})
     public List<Order> find(Map<String, Object> findArgs) {
         Session session = sessionFactory.getObject().getCurrentSession();
         CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
         CriteriaQuery<Order> query = criteriaBuilder.createQuery(Order.class);
         Root orderRoot = query.from(Order.class);
-        Root dishDetailRoot = query.from(OrderDetailsDish.class);
-        Join<?, ?> joining = orderRoot.join("orderDetailsDishes");
-        query.where(criteriaBuilder.equal(joining.get("id"), dishDetailRoot.get("order")));
 
         Date fromDateTime = (Date) findArgs.get("fromDateTime");
         Date toDateTime = (Date) findArgs.get("toDateTime");
@@ -62,27 +60,35 @@ public class OrderRepositoryImpl implements OrderRepository {
         List<Predicate> predicates = new ArrayList<>();
 
         if (fromDateTime != null) {
-            predicates.add(criteriaBuilder.greaterThanOrEqualTo(orderRoot.get("createdDate"), fromDateTime));
+            predicates.add(criteriaBuilder.greaterThanOrEqualTo(orderRoot.<Date>get("createdDate"), fromDateTime));
         }
 
         if (toDateTime != null) {
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.get("createdDate"), fromDateTime));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.<Date>get("createdDate"), toDateTime));
         } else { //if do not declare, make to present
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.get("createdDate"), new Date()));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(orderRoot.<Date>get("createdDate"), new Date()));
         }
 
-        if (isWedding != null) {
-            if (!isWedding) {
-                predicates.add(criteriaBuilder.isNull(orderRoot.get("wedding")));
-            } else {
-                predicates.add(criteriaBuilder.isNotNull(orderRoot.get("wedding")));
-            }
-        }
+//        if (isWedding != null) {
+//            if (!isWedding) {
+//                predicates.add(joining.get("wedding").isNull());
+//            } else {
+//                predicates.add(joining.get("wedding").isNotNull());
+//            }
+//        }
 
         query.where(predicates.toArray(new Predicate[0]));
         query.select(orderRoot);
+        Query q = session.createQuery(query);
+        
+        if (findArgs.get("pageIndex") != null && findArgs.get("pageSize") != null) {
+            int pageIndex = (Integer) findArgs.get("pageIndex");
+            int pageSize = (Integer) findArgs.get("pageSize");
+            q.setFirstResult((pageIndex - 1) * pageSize);
+            q.setMaxResults(pageSize);
+        }
 
-        return (session.createQuery(query).getResultList());
+        return q.getResultList();
     }
 
     @Override
@@ -163,7 +169,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     public boolean deleteOrderDish(OrderDetailsDish orderDetailsDish) {
         Session session = sessionFactory.getObject().getCurrentSession();
         try {
-            session.save(orderDetailsDish);
+            session.delete(orderDetailsDish);
             return true;
         } catch (HibernateException e) {
             return false;

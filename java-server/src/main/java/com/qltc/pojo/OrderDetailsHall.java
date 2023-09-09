@@ -7,6 +7,7 @@ import com.qltc.json.JsonMarkup;
 import com.qltc.json.deserializer.OrderDetailsHallDeserializer;
 import java.io.Serializable;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
