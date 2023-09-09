@@ -60,7 +60,7 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     public boolean getUserGroupPermissionState(UserGroup userGroup, Permission permission) {
         UserGroupPermission userGroupPermission = getUserGroupPermission(
                 userGroup.getId(), permission.getId());
-        return userGroupPermission.getAllows();
+        return userGroupPermission.getAllow();
     }
 
     @Override
@@ -96,13 +96,13 @@ public class PermissionRepositoryImpl implements PermissionRepository {
         for (Permission permission : permissions) {
             UserGroupPermission existing = getUserGroupPermission(userGroup.getId(), permission.getId());
             if (existing != null) {
-                existing.setAllows(allows);
+                existing.setAllow(allows);
                 session.update(existing);
             } else {
                 UserGroupPermission grantOrDenyOne = new UserGroupPermission();
                 grantOrDenyOne.setGroup(userGroup);
                 grantOrDenyOne.setPermission(permission);
-                grantOrDenyOne.setAllows(allows);
+                grantOrDenyOne.setAllow(allows);
                 session.save(grantOrDenyOne);
             }
         }

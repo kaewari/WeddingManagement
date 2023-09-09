@@ -7,9 +7,15 @@ package com.qltc.controller;
 import com.qltc.components.JwtService;
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
-import com.qltc.repository.UserPermissionRepository;
+import com.qltc.pojo.UserGroup;
+import com.qltc.pojo.UserGroupPermission;
+import com.qltc.pojo.UserPermission;
+import com.qltc.service.PermissionService;
+import com.qltc.service.UserGroupService;
+import com.qltc.service.UserPermissionService;
 import com.qltc.service.UserService;
 import java.security.Principal;
+import java.sql.Timestamp;
 import java.util.List;
 import org.cloudinary.json.JSONException;
 import org.cloudinary.json.JSONObject;
@@ -18,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,7 +54,11 @@ public class ApiUserController {
     @Autowired
     private JSONObject message;
     @Autowired
-    private UserPermissionRepository userRepository;
+    private UserPermissionService userPermissionService;
+    @Autowired
+    private UserGroupService userGroupService;
+    @Autowired
+    private PermissionService permissionService;
 
     @PostMapping(path = "/login/", produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
@@ -69,8 +80,9 @@ public class ApiUserController {
 
     @RequestMapping("/test/{id}")
     @CrossOrigin
+    @Transactional
     public ResponseEntity<List<Permission>> test(@PathVariable int id, Principal principal) {
-        return new ResponseEntity<>(this.userRepository.getPermissionsOfUserByUserId(id), HttpStatus.OK);
+        return new ResponseEntity<>(this.userPermissionService.getPermissionsOfUserByUserId(id), HttpStatus.OK);
     }
 
     @PostMapping(path = "/user/",
@@ -95,10 +107,29 @@ public class ApiUserController {
                 message.put("Msg", "This identity number existed");
                 return new ResponseEntity<>(message.toString(), HttpStatus.CONFLICT);
             }
-
-            User isUser = this.userService.addUser(u, file);
+            User user = new User();
+            user.setAddress(u.getAddress());
+            user.setPhone(u.getPhone());
+            user.setEmail(u.getEmail());
+            user.setName(u.getName());
+            user.setPassword(this.passEncoder.encode(u.getPassword()));
+            user.setIdentityNumber(u.getIdentityNumber());
+            user.setIsActive(false);
+            user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+            User isUser = this.userService.addUser(user, file);
             if (isUser != null) {
 //                message.put("Msg", "Create user successfully");
+                UserGroup ug = this.userGroupService.findByName("USER");
+                if (this.userGroupService.addUserToGroup(this.userService.getUserById(isUser.getId()), ug)) {
+                    List<UserGroupPermission> userGroupPermissions = this.userGroupService.findByGroupId(ug.getId());
+                    userGroupPermissions.forEach(ugp -> {
+                        UserPermission userPermission = new UserPermission();
+                        userPermission.setUser(isUser);
+                        userPermission.setPermission(this.permissionService.findById(ugp.getPermission().getId()));
+                        userPermission.setAllow(Boolean.TRUE);
+                        this.userPermissionService.addUserPermission(userPermission);
+                    });
+                }
                 return new ResponseEntity<>(isUser, HttpStatus.CREATED);
             } else {
                 message.put("Msg", "Create user failure");

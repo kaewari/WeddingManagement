@@ -1,9 +1,9 @@
 com\qltc\controller\ApiWeddingController.class
-com\qltc\controller\ApiOrderController.class
 com\qltc\controller\ApiUserGroupController$1.class
 com\qltc\service\DishService.class
 com\qltc\controller\ApiWeddingController$2.class
 com\qltc\controller\ApiPermissionController.class
+com\qltc\repository\RevenueRepository.class
 com\qltc\service\UsersGroupService.class
 com\qltc\controller\ApiDishController$1.class
 com\qltc\controller\ApiUserGroupController.class
@@ -17,6 +17,7 @@ com\qltc\service\impl\CustomerFeedbackServiceImpl$1.class
 com\qltc\filters\JwtAuthenticationTokenFilter.class
 com\qltc\controller\ApiUserPermissionController.class
 com\qltc\repository\impl\UserPermissionRepositoryImpl.class
+com\qltc\service\impl\OrderServiceImpl.class
 com\qltc\service\impl\BranchServiceImpl.class
 com\qltc\service\impl\CustomerFeedbackServiceImpl.class
 com\qltc\repository\WeddingServiceRepository.class
@@ -35,6 +36,7 @@ com\qltc\controller\ApiWeddingController$1.class
 com\qltc\repository\impl\OrderRepositoryImpl.class
 com\qltc\filters\RestAuthenticationEntryPoint.class
 com\qltc\service\UserService.class
+com\qltc\service\RevenueService.class
 com\qltc\repository\EmployeeRepository.class
 com\qltc\service\HallService.class
 com\qltc\repository\CustomerFeedbackRepository.class
@@ -55,6 +57,7 @@ com\qltc\repository\BranchRepository.class
 com\qltc\service\WeddingService.class
 com\qltc\repository\DishRepository.class
 com\qltc\service\impl\EmployeeServiceImpl.class
+com\qltc\repository\OrderDetailsServiceRepository.class
 com\qltc\repository\impl\HallRepositoryImpl.class
 com\qltc\configs\WebAppContextConfig.class
 com\qltc\configs\JwtSecurityConfig.class
@@ -65,6 +68,7 @@ com\qltc\controller\ApiHallController.class
 com\qltc\pojo\DishInBranch.class
 com\qltc\pojo\UserInGroup.class
 com\qltc\validator\UserIdValidator.class
+com\qltc\controller\ApiAdminController.class
 com\qltc\repository\WeddingPictureRepository.class
 com\qltc\service\impl\WeddingServiceImpl.class
 com\qltc\service\impl\DishServiceImpl$1.class
@@ -77,6 +81,7 @@ com\qltc\pojo\User.class
 com\qltc\service\UserGroupService.class
 com\qltc\service\impl\UserServiceImpl.class
 com\qltc\repository\HallPriceRepository.class
+com\qltc\repository\impl\RevenueRepositoryImpl.class
 com\qltc\repository\impl\WeddingServiceRepositoryImpl.class
 com\qltc\service\PermissionService.class
 com\qltc\repository\UserRepository.class
@@ -84,6 +89,7 @@ com\qltc\repository\WeddingServicePriceRepository.class
 com\qltc\repository\OrderRepository.class
 com\qltc\controller\ApiCustomerFeedbackController.class
 com\qltc\pojo\Wedding.class
+com\qltc\service\impl\RevenueServiceImpl.class
 com\qltc\controller\ApiNotFoundController.class
 com\qltc\repository\impl\EmployeeRepositoryImpl.class
 com\qltc\service\OrderService.class

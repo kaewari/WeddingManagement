@@ -5,12 +5,21 @@
 package com.qltc.controller;
 
 import com.qltc.pojo.Employee;
+import com.qltc.pojo.User;
+import com.qltc.pojo.UserGroup;
+import com.qltc.pojo.UserGroupPermission;
+import com.qltc.pojo.UserPermission;
 import com.qltc.service.BranchService;
 import com.qltc.service.EmployeeService;
+import com.qltc.service.PermissionService;
+import com.qltc.service.UserGroupService;
+import com.qltc.service.UserPermissionService;
 import com.qltc.service.UserService;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.cloudinary.json.JSONException;
 import org.cloudinary.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +32,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -41,13 +52,13 @@ public class ApiEmployeeController {
     private UserService userService;
     @Autowired
     private BranchService branchService;
+    @Autowired
+    private UserPermissionService userPermissionService;
+    @Autowired
+    private UserGroupService userGroupService;
+    @Autowired
+    private PermissionService permissionService;
 
-//    @Autowired
-//    private UserIdValidator userIdValidator;
-//    @InitBinder
-//    public void initBinder(WebDataBinder webDataBinder) {
-//        webDataBinder.setValidator((Validator) userIdValidator);
-//    }
     @RequestMapping(path = "/employees/", produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
     public ResponseEntity<List<Employee>> list() {
@@ -70,18 +81,32 @@ public class ApiEmployeeController {
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<Object> addEmployee(@RequestBody Map<String, String> e) {
+    public ResponseEntity<Object> addEmployee(@RequestBody Map<String, String> e, @RequestPart(value = "file", required = false) MultipartFile file) {
         try {
-            if (this.userService.getUserById(Integer.parseInt(e.get("userId"))) == null) {
-                message.put("Msg", "This user does not exists");
-                return new ResponseEntity<>(message.toString(), HttpStatus.CONFLICT);
-            }
-            if (this.employeeService.getEmployeeByUserId(Integer.parseInt(e.get("userId"))) != null) {
-                message.put("Msg", "This user id existed");
+            if (this.userService.findUserInfo("phone", e.get("phone"))) {
+                message.put("Msg", "This phone existed");
                 return new ResponseEntity<>(message.toString(), HttpStatus.CONFLICT);
             }
             if (this.employeeService.getEmployeeByIdentityNumber(e.get("identityNumber")) != null) {
                 message.put("Msg", "This identity number existed");
+                return new ResponseEntity<>(message.toString(), HttpStatus.CONFLICT);
+            }
+            User user = new User();
+            user.setName(e.get("name"));
+            user.setAddress(e.get("address"));
+            user.setEmail(e.get("email"));
+            user.setPhone(e.get("phone"));
+            user.setIdentityNumber(e.get("identityNumber"));
+            user.setIsActive(Boolean.FALSE);
+            user.setPassword(e.get("password"));
+            user.setCreatedDate(new Timestamp(System.currentTimeMillis()));
+            User isUser = this.userService.addUser(user, file);
+            if (isUser == null) {
+                message.put("Msg", "This user does not exists");
+                return new ResponseEntity<>(message.toString(), HttpStatus.CONFLICT);
+            }
+            if (this.employeeService.getEmployeeByUserId(isUser.getId()) != null) {
+                message.put("Msg", "This user id existed");
                 return new ResponseEntity<>(message.toString(), HttpStatus.CONFLICT);
             }
             Employee employee = new Employee();
@@ -90,21 +115,29 @@ public class ApiEmployeeController {
             employee.setIdentityNumber(e.get("identityNumber"));
             employee.setPosition(e.get("position"));
             employee.setBranchId(this.branchService.findById(Integer.parseInt((String) e.get("branchId"))));
-            employee.setUserId(this.userService.getUserById(Integer.parseInt((String) e.get("userId"))));
+            employee.setUserId(this.userService.getUserById(isUser.getId()));
             Employee isEmployee = this.employeeService.addEmployee(employee);
             if (isEmployee != null) {
-//                message.put("Msg", "Create employee successfully");
+                UserGroup ug = this.userGroupService.findByName("WAITER");
+                if (this.userGroupService.addUserToGroup(this.userService.getUserById(isUser.getId()), ug)) {
+                    List<UserGroupPermission> userGroupPermissions = this.userGroupService.findByGroupId(ug.getId());
+                    userGroupPermissions.forEach(ugp -> {
+                        UserPermission userPermission = new UserPermission();
+                        userPermission.setUser(isUser);
+                        userPermission.setPermission(this.permissionService.findById(ugp.getPermission().getId()));
+                        userPermission.setAllow(Boolean.TRUE);
+                        this.userPermissionService.addUserPermission(userPermission);
+                    });
+                }
                 return new ResponseEntity<>(isEmployee, HttpStatus.CREATED);
             } else {
                 message.put("Msg", "Create employee failure");
                 return new ResponseEntity<>(message.toString(), HttpStatus.CONFLICT);
-
             }
-        } catch (Exception ex) {
+        } catch (NumberFormatException | JSONException ex) {
             message.put("Msg", "Cannot create employee");
-            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ex.getCause(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
     }
 
     @PostMapping(path = "/employees/update/{id}/",

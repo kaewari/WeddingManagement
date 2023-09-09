@@ -90,6 +90,6 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public SimpleDateFormat simpleDateFormat() {
-        return new SimpleDateFormat("yyyy-MM-dd");
+        return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
 }

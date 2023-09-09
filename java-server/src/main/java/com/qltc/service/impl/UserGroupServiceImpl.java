@@ -3,6 +3,8 @@ package com.qltc.service.impl;
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
 import com.qltc.pojo.UserGroup;
+import com.qltc.pojo.UserGroupPermission;
+import com.qltc.pojo.UserInGroup;
 import com.qltc.repository.UserGroupRepository;
 import com.qltc.service.UserGroupService;
 import java.util.List;
@@ -75,4 +77,18 @@ public class UserGroupServiceImpl implements UserGroupService {
         return userGroupRepo.removeUserFromGroup(user, userGroup);
     }
 
+    @Override
+    public UserGroup findByName(String name) {
+        return userGroupRepo.findByName(name);
+    }
+
+    @Override
+    public UserInGroup getUserExistingInGroup(User user, UserGroup userGroup) {
+        return userGroupRepo.getUserExistingInGroup(user, userGroup);
+    }
+
+    @Override
+    public List<UserGroupPermission> findByGroupId(int groupId) {
+        return userGroupRepo.findByGroupId(groupId);
+    }
 }

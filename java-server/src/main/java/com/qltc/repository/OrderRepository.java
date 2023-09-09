@@ -6,16 +6,23 @@ import java.util.Map;
 
 public interface OrderRepository {
 
-    public List<Order> findAll();
+    public List<Order> getOrders();
 
-    public Order findById(long id);
+    public Order getOrderById(int id);
 
-    public List<Order> find(Map<String, Object> findArgs);
+    List<Order> getOrdersByEmployeeId(int employeeId);
+
+    List<Order> getOrdersByCustomerId(int customerId);
+
+    public boolean getOrderByReceiptNumber(String receiptNumber);
+
+    public List<Order> searchOrders(Map<String, Object> findArgs);
 
     public boolean addOrUpdateOrder(Order order);
 
     public boolean deleteOrderById(int id);
 
-    public boolean deleteOrder(Order order);
+    public boolean deleteOrdersByCustomerId(int customerId);
+
     //count, stats
 }

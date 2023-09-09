@@ -73,6 +73,16 @@ public class ApiUserGroupController {
         }
     }
 
+    @GetMapping("/name/{name}")
+    public ResponseEntity<Object> getByName(@PathVariable("name") String name) {
+        return new ResponseEntity<>(this.userGroupService.findByName(name), HttpStatus.OK);
+    }
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<Object> findByGroupId(@PathVariable int id) {
+        return new ResponseEntity<>(this.userGroupService.findByGroupId(id), HttpStatus.OK);
+    }
+
     @PostMapping //ok
     @Transactional(propagation = Propagation.REQUIRED) //ok
     public ResponseEntity<UserGroup> addNewUserGroup(@RequestBody UserGroup userGroup) {
@@ -94,14 +104,10 @@ public class ApiUserGroupController {
     }
 
     @PostMapping("/{userGroupId}")
-    public ResponseEntity addUserToGroup(@PathVariable("userGroupId") int id,
+    public ResponseEntity<Object> addUserToGroup(@PathVariable("userGroupId") int id,
             @RequestBody Map<String, String> request) {
         UserGroup existing = userGroupService.findById(id);
-        //Get user
-        //add new UserInGroup
-        //add that to userGroup object
-        //update userGroup object
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(true, HttpStatus.BAD_REQUEST);
     }
 
     //remove user from group

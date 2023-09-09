@@ -29,27 +29,30 @@ public class Hall implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    
+
     @Basic(optional = false)
     private String name;
-    
+
     private String description;
-    
+
+    @Basic(optional = false)
+    private String image;
+
     @Column(nullable = true)
     private String tableCount;
-    
+
     @Column(nullable = true)
     private String guestUpTo;
-    
+
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
-    
+
     @Basic(optional = false)
     private Boolean isActive = true;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hall", orphanRemoval = true)
     private Set<HallPrice> prices = new HashSet<>();
-    
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branchId")
@@ -59,24 +62,28 @@ public class Hall implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "modifiedBy")
     private User user;
-    
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof Hall)) { return false;}
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Hall)) {
+            return false;
+        }
         return id != null && id.equals(((Hall) o).getId());
     }
-    
+
     @Override
     public int hashCode() {
         return getClass().hashCode();
     }
-    
+
     public void addHallPrice(HallPrice hallPrice) {
         prices.add(hallPrice);
         hallPrice.setHall(this);
     }
-    
+
     public void removeHallPrice(HallPrice hallPrice) {
         prices.remove(hallPrice);
         hallPrice.setHall(null);
