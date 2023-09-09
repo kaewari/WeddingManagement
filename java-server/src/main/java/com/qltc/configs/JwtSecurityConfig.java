@@ -28,7 +28,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableWebSecurity
 @EnableTransactionManagement
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan(basePackages = {
     "com.qltc.controller",
     "com.qltc.repository",

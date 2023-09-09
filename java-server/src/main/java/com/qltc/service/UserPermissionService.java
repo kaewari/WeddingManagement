@@ -18,7 +18,7 @@ public interface UserPermissionService {
 
     List<Permission> getPermissionsOfUserByUserId(int userId);
 
-    UserPermission addUserPermissionsByUserId(UserPermission userPermisison);
+    UserPermission addUserPermission(UserPermission userPermisison);
 
     boolean updateUserPermissionById(UserPermission userPermisison);
 

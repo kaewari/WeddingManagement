@@ -1,15 +1,13 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.qltc.json.deserializer.OrderDeserializer;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -25,29 +23,28 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import lombok.Data;
 
-
 @Entity
 @Data
 @Table(name = "orders")
-@JsonDeserialize(using = OrderDeserializer.class)
 public class Order implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
     private Integer id;
     
-    @Basic
+    @Basic(optional = false)
     private double total;
     
-    @Basic
+    @Basic(optional = false)
     private double discount = 0;
    
     @Column(nullable = true)
     private String receiptNo;
-    
+
     @Column(nullable = true)
-    private String paidVia;
+    private String padVia;
     
     @Column(nullable = true)
     private String note;
@@ -56,55 +53,47 @@ public class Order implements Serializable {
     private Date createdDate = new Date();
     
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name = "customerId", nullable = true)
     private User customer;
-    
-    @JsonIgnore
-    @ManyToOne(optional = false, fetch = FetchType.EAGER)
+
+    @ManyToOne(optional = false)
     @JoinColumn(name = "employeeId")
     private User staff;
     
-    @OneToOne(mappedBy = "order")
+    @JsonIgnore
+    @OneToOne(mappedBy = "order",cascade = CascadeType.ALL, orphanRemoval = true)
     private Wedding wedding;
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsDish> orderDetailsDishes = new HashSet<>();
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsHall> orderDetailsHalls = new HashSet<>();
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OrderDetailsService> orderDetailsServices = new HashSet<>();
     
-    public Map getWhatCustomer() {
-        if (this.customer == null) return new HashMap<>();
-        Map<String, Object> userJson = new HashMap<>();
-        userJson.put("id", customer.getId());
-        userJson.put("name", customer.getName());
-        userJson.put("avatar", customer.getAvatar());
-        return userJson;
-    }
-    
-    public Map getWhatStaff() {
-        if (this.staff == null) return new HashMap<>();
-        Map<String, Object> userJson = new HashMap<>();
-        userJson.put("id", staff.getId());
-        userJson.put("name", staff.getName());
-        userJson.put("avatar", staff.getAvatar());
-        return userJson;
-    }
     
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Order)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Order)) {
+            return false;
+        }
         return obj != null && this.equals(((Order) obj).getId());
     }
-    
+
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+    
+    public void setWedding(Wedding wedding) {
+        this.wedding = wedding;
+        wedding.setOrder(this);
     }
     
     public void addOrderDetailsDish(OrderDetailsDish orderDetailsDish) {

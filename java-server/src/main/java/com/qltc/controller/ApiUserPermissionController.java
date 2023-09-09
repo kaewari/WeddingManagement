@@ -54,7 +54,7 @@ public class ApiUserPermissionController {
     @PostMapping(path = "/user-permission/add/",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
-    public ResponseEntity<Object> addUserPermissionByUserId(@RequestBody Map<String, String> userPermisison) {
+    public ResponseEntity<Object> addUserPermission(@RequestBody Map<String, String> userPermisison) {
         try {
             if (this.userPermissionService.checkExistUserPermission(Integer.parseInt(userPermisison.get("userId")),
                     Integer.parseInt(userPermisison.get("permissionId"))) != null) {
@@ -65,7 +65,7 @@ public class ApiUserPermissionController {
             uPermission.setPermission(this.permissionService.findById(Integer.parseInt(userPermisison.get("permissionId"))));
             uPermission.setUser(this.userService.getUserById(Integer.parseInt(userPermisison.get("userId"))));
             uPermission.setAllow(Boolean.TRUE);
-            return new ResponseEntity<>(this.userPermissionService.addUserPermissionsByUserId(uPermission), HttpStatus.OK);
+            return new ResponseEntity<>(this.userPermissionService.addUserPermission(uPermission), HttpStatus.OK);
         } catch (NumberFormatException e) {
             message.put("Msg", "Cannot add new user permission");
             return new ResponseEntity<>(message.toString(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -16,9 +16,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
-
-
-@Entity @Data
+@Entity
+@Data
 @Table(name = "user_group_permission")
 public class UserGroupPermission implements Serializable {
 
@@ -30,25 +29,29 @@ public class UserGroupPermission implements Serializable {
     
     @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
-    private Boolean allows = false;
-    
+    private Boolean allow = false;
+
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "groupId")
     private UserGroup group;
-    
+
     @JsonIgnore
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "permissionId")
     private Permission permission;
-    
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) { return true; }
-        if (!(o instanceof UserGroupPermission)) { return false;}
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof UserGroupPermission)) {
+            return false;
+        }
         return id != null && id.equals(((UserGroupPermission) o).getId());
     }
-    
+
     @Override
     public int hashCode() {
         return getClass().hashCode();

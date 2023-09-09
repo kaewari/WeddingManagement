@@ -57,13 +57,17 @@ public class JwtAuthenticationTokenFilter extends UsernamePasswordAuthentication
                 boolean accountNonExpired = true;
                 boolean credentialsNonExpired = true;
                 boolean accountNonLocked = true;
-//                List<Permission> permissions = this.permissionService.getPermissionsOfUserByUserId(user.getId());
-                List<String> permissions = this.userService.getPermissions(user.getId());
+//                Object[] permissions = this.userPermissionRepo.getPermissionsByUserId(user.getId()).toArray();
+//                Set<GrantedAuthority> authorities = new HashSet<>();
+//                for (Object permission : permissions) {
+//                    authorities.add(new SimpleGrantedAuthority(permission.toString()));
+//                }
+                Object[] permissions = this.userService.getPermissions(user.getId()).toArray();
                 Set<GrantedAuthority> authorities = new HashSet<>();
-                permissions.forEach(permission -> {
-//                    authorities.add(new SimpleGrantedAuthority(permission.getValue()));
-                    authorities.add(new SimpleGrantedAuthority(permission));
-                });
+                for (Object permission : permissions) {
+                    authorities.add(new SimpleGrantedAuthority((String) permission));
+                }
+
 //                Set<GrantedAuthority> authorities = new HashSet<>();
 //                authorities.add(new SimpleGrantedAuthority("USER"));
                 UserDetails userDetail = new org.springframework.security.core.userdetails.User(name, user.getPassword(), enabled, accountNonExpired,

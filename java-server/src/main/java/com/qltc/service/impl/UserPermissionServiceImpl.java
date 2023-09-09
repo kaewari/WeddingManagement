@@ -33,8 +33,8 @@ public class UserPermissionServiceImpl implements UserPermissionService {
     }
 
     @Override
-    public UserPermission addUserPermissionsByUserId(UserPermission userPermisison) {
-        return this.permissionRepository.addUserPermissionsByUserId(userPermisison);
+    public UserPermission addUserPermission(UserPermission userPermisison) {
+        return this.permissionRepository.addUserPermissions(userPermisison);
     }
 
     @Override

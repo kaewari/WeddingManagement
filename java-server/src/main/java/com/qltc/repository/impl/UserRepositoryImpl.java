@@ -24,18 +24,26 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User getUserByName(String name) {
-        Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("FROM User WHERE name=:n");
-        q.setParameter("n", name);
-        return (User) q.getSingleResult();
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            Query q = s.createQuery("FROM User WHERE name=:n");
+            q.setParameter("n", name);
+            return (User) q.getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 
     @Override
     public User getUserById(int id) {
-        Session s = this.factory.getObject().getCurrentSession();
-        Query q = s.createQuery("FROM User WHERE id=:id");
-        q.setParameter("id", id);
-        return (User) q.getSingleResult();
+        try {
+            Session s = this.factory.getObject().getCurrentSession();
+            Query q = s.createQuery("FROM User WHERE id=:id");
+            q.setParameter("id", id);
+            return (User) q.getSingleResult();
+        } catch (NoResultException nre) {
+            return null;
+        }
     }
 
     @Override
@@ -70,14 +78,19 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public boolean authUser(String name, String password) {
-        User u = this.getUserByName(name);
-        return this.passEncoder.matches(password, u.getPassword());
+        try {
+            User u = this.getUserByName(name);
+            return this.passEncoder.matches(password, u.getPassword());
+        } catch (NoResultException nre) {
+            return false;
+        }
     }
 
     @Override
     public User addUser(User u) {
         Session s = this.factory.getObject().getCurrentSession();
         s.save(u);
+
         return u;
     }
 
