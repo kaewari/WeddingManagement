@@ -108,16 +108,32 @@ public class UserServiceImpl implements UserService {
         return this.userRepo.getUserByName(name);
     }
 
-    @Override
+//    @Override
+//    public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
+//        User user = this.userRepo.getUserByName(name);
+//        if (user == null) {
+//            throw new UsernameNotFoundException("Invalid user!");
+//        }
+//        List<UserPermission> userPermission = (List<UserPermission>) (UserPermission) this.userPermissionRepo.getPermissionsByUserId(user.getId());
+//        Set<GrantedAuthority> authorities = new HashSet<>();
+//        userPermission.forEach(u -> {
+//            authorities.add(new SimpleGrantedAuthority(u.toString()));
+//
+//        });
+//        return new org.springframework.security.core.userdetails.User(
+//                user.getName(), user.getPassword(), authorities);
+//    }
+    
+        @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         User user = this.userRepo.getUserByName(name);
         if (user == null) {
             throw new UsernameNotFoundException("Invalid user!");
         }
-        List<UserPermission> userPermission = (List<UserPermission>) (UserPermission) this.userPermissionRepo.getPermissionsOfUserByUserId(user.getId());
+        List<String> userPermission = this.userRepo.getPermissionsById(user.getId());
         Set<GrantedAuthority> authorities = new HashSet<>();
         userPermission.forEach(u -> {
-            authorities.add(new SimpleGrantedAuthority(u.toString()));
+            authorities.add(new SimpleGrantedAuthority(u));
 
         });
         return new org.springframework.security.core.userdetails.User(
@@ -127,5 +143,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean findUserInfo(Object key, Object value) {
         return this.userRepo.findUserInfo(key, value);
+    }
+
+    @Override
+    public List<String> getPermissions(int userId) {
+        return userRepo.getPermissionsById(userId);
     }
 }

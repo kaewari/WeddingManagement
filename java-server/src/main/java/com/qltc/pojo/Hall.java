@@ -1,9 +1,13 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -19,6 +23,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import lombok.Data;
 
 @Entity
@@ -26,27 +31,35 @@ import lombok.Data;
 @Table(name = "halls")
 public class Hall implements Serializable {
 
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private String name;
     
+    @JsonView(JsonMarkup.CoreData.class)
     private String description;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Column(nullable = true)
     private String tableCount;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Column(nullable = true)
     private String guestUpTo;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Boolean isActive = true;
     
+    @JsonView(JsonMarkup.FullData.class)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "hall", orphanRemoval = true)
     private Set<HallPrice> prices = new HashSet<>();
     
@@ -56,9 +69,19 @@ public class Hall implements Serializable {
     private Branch atBranch;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "modifiedBy")
     private User user;
+    
+    @Transient
+    public Map getWhatUser() {
+        if (this.user == null) return new HashMap<>();
+        Map<String, Object> userJson = new HashMap<>();
+        userJson.put("id", user.getId());
+        userJson.put("name", user.getName());
+        userJson.put("avatar", user.getAvatar());
+        return userJson;
+    }
     
     @Override
     public boolean equals(Object o) {

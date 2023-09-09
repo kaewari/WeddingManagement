@@ -1,13 +1,30 @@
 package com.qltc.controller;
 
-//some missing below about user (class)
+import com.cloudinary.Cloudinary;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.qltc.json.JsonMarkup;
+import com.qltc.pojo.HallPrice;
+import com.qltc.pojo.Order;
+import com.qltc.pojo.OrderDetailsDish;
+import com.qltc.pojo.OrderDetailsHall;
+import com.qltc.pojo.OrderDetailsService;
+import com.qltc.pojo.User;
 import com.qltc.pojo.Wedding;
 import com.qltc.pojo.WeddingPicture;
 import com.qltc.pojo.WeddingServicePrice;
+import com.qltc.service.OrderService;
+import com.qltc.service.UserService;
 import com.qltc.service.WeddingService;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Propagation;
@@ -29,8 +46,18 @@ public class ApiWeddingController {
 
     @Autowired
     private WeddingService weddingService;
+    
+    @Autowired
+    UserService userService;
+    
+    @Autowired
+    private OrderService orderService;
+    
+    @Autowired
+    private Cloudinary cloudinary;
 
-    @GetMapping //ok
+    @GetMapping
+    @JsonView(JsonMarkup.CoreData.class)
     @ResponseStatus(HttpStatus.OK)
     public List<Wedding> getAllWedding(@RequestParam(name = "completed", required = false) Boolean completed,
             @RequestParam(name = "onlyDeposit", required = false) Boolean onlyDeposit,
@@ -44,7 +71,8 @@ public class ApiWeddingController {
         });
     }
 
-    @GetMapping("/{weddingId}") //fail in user attribute
+    @GetMapping("/{weddingId}")
+    @JsonView(JsonMarkup.FetchedData.class)
     public ResponseEntity<Wedding> getWeddingById(@PathVariable("weddingId") int id) {
         Wedding existing = weddingService.findWeddingById(id);
         if (existing != null) {
@@ -53,12 +81,86 @@ public class ApiWeddingController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+    
+    @GetMapping("/available-hall-price")
+    @ResponseStatus(HttpStatus.OK)
+    public List<HallPrice> getAvailableHallPrice(@RequestParam("inDate") @DateTimeFormat(pattern = "dd-MM-yyyy") Date inDate,
+            @RequestParam("hallId") int hallId) {
+        return weddingService.getAvailableHallPrice(inDate, hallId);
+    }
 
-//    @PostMapping
-//    public ResponseEntity<Wedding> addNewWedding(@RequestBody Map<String, Object> request) {
-//        
-//    }
-    //update wedding
+    @PostMapping
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseEntity addNewWedding(@RequestBody Order order) {
+        Wedding wedding = order.getWedding();
+        double total = 0;
+        
+        Set<OrderDetailsDish> orderDish = order.getOrderDetailsDishes();
+        if (orderDish != null && !orderDish.isEmpty()) {
+            for (OrderDetailsDish each : orderDish) {
+                if (each.getQuantity() < wedding.getTableNumber()) {
+                    each.setQuantity(wedding.getTableNumber() * each.getQuantity());
+                }
+                total += each.getQuantity() * each.getPrice() * (1 - each.getDiscount());
+            }
+        }
+        Set<OrderDetailsHall> orderHall = order.getOrderDetailsHalls();
+        if (orderHall != null && !orderHall.isEmpty()) {
+            for (OrderDetailsHall each : orderHall) {
+                total += each.getPrice() * (1 - each.getDiscount());
+            }
+        }
+        Set<OrderDetailsService> orderDetailsServices = order.getOrderDetailsServices();
+        if (orderDetailsServices != null && !orderDetailsServices.isEmpty()) {
+            for (OrderDetailsService each : orderDetailsServices) {
+                total += each.getPrice() * each.getQuantity();
+            }
+        }
+        
+        if (total > 0) {
+            order.setTotal(total - wedding.getDiscount());
+            if (!Double.isNaN(wedding.getDeposit())) {
+                wedding.setTotalLeft(total - wedding.getDeposit());
+            }
+        }
+                
+        if (orderService.addOrUpdate(order)) {
+            return new ResponseEntity<>(order.getWedding(), HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PutMapping("/{weddingId}")
+    public ResponseEntity updateExistingWedding(@PathVariable("weddingId") int id,
+                @RequestBody Wedding wedding, Principal principal) {
+        Wedding existing = weddingService.findWeddingById(id);
+        if (existing == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        
+        if (wedding.getDescription() != null && !wedding.getDescription().isEmpty())
+                existing.setDescription(wedding.getDescription());
+        if (!Double.isNaN(wedding.getDiscount())) existing.setDiscount(wedding.getDiscount());
+        if (wedding.getIsCompleted() != null) existing.setIsCompleted(wedding.getIsCompleted());
+        if (!Double.isNaN(wedding.getDeposit())) {
+            existing.setDeposit(wedding.getDeposit());
+            existing.setTotalLeft(wedding.getOrder().getTotal() - existing.getDeposit() - existing.getDiscount());
+        }
+        //check date
+        if (wedding.getCelebrityDate() != null) existing.setCelebrityDate(wedding.getCelebrityDate());
+        if (!Double.isNaN(wedding.getTotalLeft())) existing.setTotalLeft(wedding.getTotalLeft());
+        if (wedding.getPaidVia() != null && wedding.getPaidVia() != null) existing.setPaidVia(wedding.getPaidVia());
+        if (Integer.valueOf(wedding.getGuestNumber()) != null ) existing.setGuestNumber(wedding.getGuestNumber());
+        if (Integer.valueOf(wedding.getTableNumber()) != null) existing.setTableNumber(wedding.getTableNumber());
+        
+        wedding.setUser(userService.getUserByName(principal.getName()));
+        
+        if  (weddingService.addOrUpdateWedding(wedding)) {
+            return new ResponseEntity(HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
     @DeleteMapping("/{weddingId}")
     public ResponseEntity deleteWedding(@PathVariable("weddingId") int id) {
         if (weddingService.deleteWeddingById(id)) {
@@ -84,9 +186,12 @@ public class ApiWeddingController {
         }
     }
 
-    //error modifiedBy not be null
     @PostMapping("/service")
-    public ResponseEntity<com.qltc.pojo.WeddingService> addNewWeddingService(@RequestBody com.qltc.pojo.WeddingService service) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public ResponseEntity<com.qltc.pojo.WeddingService> addNewWeddingService(@RequestBody com.qltc.pojo.WeddingService service
+                    , Principal principal) {
+        User currentUser = userService.getUserByName(principal.getName());
+        service.setUser(currentUser);
         if (weddingService.addOrUpdateWeddingService(service)) {
             return new ResponseEntity<>(service, HttpStatus.CREATED);
         } else {
@@ -95,8 +200,9 @@ public class ApiWeddingController {
     }
 
     @PutMapping("/service/{serviceId}") //ok
+    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseEntity updateExistingWeddingService(@PathVariable("serviceId") int id,
-            @RequestBody com.qltc.pojo.WeddingService service) {
+            @RequestBody com.qltc.pojo.WeddingService service, Principal principal) {
         com.qltc.pojo.WeddingService existing = weddingService.findWeddingServiceById(id);
         if (!service.getName().isEmpty()) {
             existing.setName(service.getName());
@@ -104,7 +210,10 @@ public class ApiWeddingController {
         if (service.getIsAvailable() != null) {
             existing.setIsAvailable(service.getIsAvailable());
         }
-        //set User to current user
+        
+        User currentUser = userService.getUserByName(principal.getName());
+        existing.setUser(currentUser);
+        
 
         if (id == service.getId() && weddingService.addOrUpdateWeddingService(existing)) {
             return new ResponseEntity(HttpStatus.ACCEPTED);
@@ -114,6 +223,7 @@ public class ApiWeddingController {
     }
 
     @PostMapping("/service/{serviceId}/deactivate") //ok
+    @Transactional(propagation = Propagation.REQUIRED)
     public ResponseEntity deactivateWeddingService(@PathVariable("serviceId") int id) {
         if (weddingService.deactiveWeddingServiceById(id)) {
             return new ResponseEntity(HttpStatus.ACCEPTED);
@@ -143,8 +253,10 @@ public class ApiWeddingController {
 
     @PostMapping("/service/{serviceId}/add-service-price") //ok
     public ResponseEntity addNewServicePrice(@PathVariable("serviceId") int id,
-            @RequestBody List<WeddingServicePrice> request) {
+            @RequestBody List<WeddingServicePrice> request, Principal principal) {
         com.qltc.pojo.WeddingService service = weddingService.findWeddingServiceById(id);
+        User currentUser = userService.getUserByName(principal.getName());
+        service.setUser(currentUser);
         if (service != null) {
             com.qltc.pojo.WeddingService response = weddingService.addPriceToService(service, request);
             if (response != null) {
@@ -170,6 +282,7 @@ public class ApiWeddingController {
             if (servicePrice.getIsAvailable() != null) {
                 existing.setIsAvailable(servicePrice.getIsAvailable());
             }
+            
 
             if (weddingService.addOrUpdateWeddingServicePrice(existing)) {
                 return new ResponseEntity(HttpStatus.ACCEPTED);
@@ -224,6 +337,16 @@ public class ApiWeddingController {
     public ResponseEntity<WeddingPicture> addNewPicture(@PathVariable("weddingId") int id,
             @RequestBody WeddingPicture weddingPicture) {
         Wedding existing = weddingService.findWeddingById(id);
+        
+        //upload into cloudinary
+        try {
+            Map<String, Object> result = cloudinary.uploader().upload(weddingPicture.getFile().getBytes(), 
+                    new HashMap<String, Object>() {{ put("unsigned", true); }});
+            weddingPicture.setPath((String) result.get("secure_url"));
+        } catch (IOException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
+        }
+        
         if (existing != null && weddingService.addPictureToWedding(existing, weddingPicture)) {
             return new ResponseEntity<>(weddingPicture, HttpStatus.CREATED);
         } else {
@@ -252,5 +375,43 @@ public class ApiWeddingController {
         } else {
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
+    }
+    
+    @PostMapping("/{weddingOrderId}/pay")
+    public ResponseEntity payWeddingOrder(@PathVariable("weddingOrderId") int id,
+            @RequestBody Map<String, Object> request) {
+        Wedding wedding = weddingService.findWeddingById(id);
+        if (wedding == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        Order order = wedding.getOrder();
+        
+        //request {"deposit": "Double", "completed": "Boolean", "receiptNo": "String", "paidVia": "String"}
+        Double deposit = (Double) request.get("deposit");
+        Boolean completed = (Boolean) request.get("completed");
+        String receiptNo = (String) request.get("receiptNo");
+        String paidVia = (String) request.get("paidVia");
+        if (deposit != null) {
+            //pay for deposit
+            order.setCreatedDate(new Date());
+            if (receiptNo != null && !receiptNo.isEmpty()) order.setReceiptNo(receiptNo);
+            order.setPaidVia(paidVia);
+            if (orderService.addOrUpdate(order)) {
+                return new ResponseEntity(HttpStatus.ACCEPTED);
+            } else {
+                return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+            }
+        } else if (completed != null) {
+            //pay for totalLeft
+            wedding.setTotalLeft(order.getTotal() - wedding.getDeposit());
+            wedding.setPaidVia(paidVia);
+            wedding.setReceiptNo(receiptNo);
+            order.setWedding(wedding);
+            if (orderService.addOrUpdate(order)) {
+                return new ResponseEntity(HttpStatus.ACCEPTED);
+            } else {
+                return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+            }
+        }
+        
+        return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
     }
 }

@@ -11,6 +11,8 @@ import java.util.List;
 public interface UserPermissionRepository {
 
     List<UserPermission> getUserPermissionsByUserId(int userId);
+    
+    List<String> getPermissionStringsByUserId(int id);
 
     List<UserPermission> getUserPermissionsByPermissionId(int permissionId);
 

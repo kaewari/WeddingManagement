@@ -1,12 +1,14 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.qltc.json.deserializer.CustomerFeedbackDeserializer;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.Basic;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,16 +19,18 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "customer_feedbacks")
+@Table(name = "customer_feedbacks") //fails with create new (null id in this pojo)
+@JsonDeserialize(using = CustomerFeedbackDeserializer.class)
 public class CustomerFeedback implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private Integer id;
     
     @Basic(optional = false)
@@ -39,18 +43,38 @@ public class CustomerFeedback implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
     
+    @Basic
     private String reply;
     
     @JsonIgnore
-    @JsonSetter//temp
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customerId")
     private User customer;
-   
-    @JsonIgnore //temp error always get user0.branchId, firstName, lastName  but branchId,... is Employee's attribute
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "userId", nullable = true)
     private User user;
+    
+    @Transient
+    public Map getWhatCustomer() {
+        if (this.customer == null) return new HashMap<>();
+        Map<String, Object> userJson = new HashMap<>();
+        userJson.put("id", customer.getId());
+        userJson.put("name", customer.getName());
+        userJson.put("avatar", customer.getAvatar());
+        return userJson;
+    }
+    
+    @Transient
+    public Map getWhatUser() {
+        if (this.user == null) return new HashMap<>();
+        Map<String, Object> userJson = new HashMap<>();
+        userJson.put("id", user.getId());
+        userJson.put("name", user.getName());
+        userJson.put("avatar", user.getAvatar());
+        return userJson;
+    }
     
     @Override
     public boolean equals(Object obj) {

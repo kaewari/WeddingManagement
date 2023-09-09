@@ -165,20 +165,10 @@ public class PermissionRepositoryImpl implements PermissionRepository {
     public boolean resetPermissionOfUserGroup(UserGroup userGroup) {
         Session session = sessionFactory.getObject().getCurrentSession();
         try {
-            Query query = session.createQuery("From UserGroupPermission ugp Where"
-                    + " ugp.groupId = ?");
-            query.setParameter(0, userGroup.getId());
-            List<UserGroupPermission> userGroupPermissions = query.getResultList();
-            if (!userGroupPermissions.isEmpty()) {
-                Transaction transaction = session.beginTransaction();
-                userGroupPermissions.forEach((UserGroupPermission userGroupPermission) -> {
-                    session.delete(userGroupPermission);
-                });
-                transaction.commit();
-                return true;
-            } else {
-                return false;
-            }
+            Query query = session.createQuery("DELETE FROM UserGroupPermission ugp WHERE ugp.group = :userGroup");
+            query.setParameter("userGroup", userGroup);
+            query.executeUpdate();
+            return true;
         } catch (HibernateException e) {
             return false;
         }

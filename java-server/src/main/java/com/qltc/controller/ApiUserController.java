@@ -1,22 +1,25 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.controller;
 
 import com.qltc.components.JwtService;
 import com.qltc.pojo.Permission;
 import com.qltc.pojo.User;
 import com.qltc.repository.UserPermissionRepository;
+import com.qltc.service.PermissionService;
 import com.qltc.service.UserService;
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.cloudinary.json.JSONException;
 import org.cloudinary.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,13 +30,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- *
- * @author sonho
- */
 @RestController
 @RequestMapping("/api")
 public class ApiUserController {
@@ -48,6 +48,9 @@ public class ApiUserController {
     private JSONObject message;
     @Autowired
     private UserPermissionRepository userRepository;
+    
+    @Autowired
+    private PermissionService permissionService;
 
     @PostMapping(path = "/login/", produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
@@ -65,6 +68,20 @@ public class ApiUserController {
             message.put("Msg", "Cannot login");
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    @GetMapping("/get_authorities")
+    @ResponseStatus(HttpStatus.OK)
+    public Set getAuthorities(Principal principal) {
+        if (principal == null) return new HashSet();
+        String name = principal.getName();
+        User user = userService.getUserByName(name);
+        List<String> userPermission = userService.getPermissions(user.getId());
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        userPermission.forEach(u -> {
+            authorities.add(new SimpleGrantedAuthority(u));
+        });
+        return authorities;
     }
 
     @RequestMapping("/test/{id}")
@@ -233,6 +250,44 @@ public class ApiUserController {
             return new ResponseEntity<>(message.toString(), HttpStatus.NOT_FOUND);
         } catch (JSONException e) {
             return new ResponseEntity<>("Delete Failure", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PostMapping("/{userId}/grant-permission")
+    @CrossOrigin
+    // {"allows": "Boolean", "permissionIds": "Array[]"}
+    public ResponseEntity grantPermssionForUser(@PathVariable("userId") int id,
+            @RequestBody Map<String, Object> request) {
+        User existing = userService.getUserById(id);
+        if (existing == null) return new ResponseEntity(HttpStatus.NOT_FOUND);
+        
+        Boolean isGranted = (Boolean) request.get("allows");
+        if (isGranted == null) isGranted = true;
+        List<Integer> permissionIds = (List<Integer>) request.get("permissionIds");
+        List<Permission> permissions = new LinkedList<>();
+        for (Integer pId : permissionIds) {
+            Permission permission = permissionService.findById(pId);
+            if (permission == null) return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            permissions.add(permission);
+        }
+        
+        if (isGranted && permissionService.grantPermissionForUser(existing, permissions)) {
+            return new ResponseEntity(HttpStatus.ACCEPTED);
+        } else if (!isGranted && permissionService.denyPermissionForUser(existing, permissions)) {
+            return new ResponseEntity(HttpStatus.ACCEPTED);
+        } else {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @DeleteMapping("/{userId}/reset-permission")
+    @CrossOrigin
+    public ResponseEntity resetPermission(@PathVariable("userId") int id) {
+        User existing = userService.getUserById(id);
+        if (existing != null && permissionService.resetAllPermissionsOfUser(existing)) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
     }
 }

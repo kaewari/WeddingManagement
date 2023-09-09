@@ -53,13 +53,9 @@ public class CustomerFeedbackRepositoryImpl implements CustomerFeedbackRepositor
 
         if (findArgs.get("replied") != null) {
             if ((Boolean) findArgs.get("replied")) {
-                predicates.add(criteriaBuilder.and(
-                        criteriaBuilder.isNotNull(root.get("reply")),
-                        criteriaBuilder.isNotEmpty(root.get("reply"))));
+                predicates.add(criteriaBuilder.isNotNull(root.get("reply")));
             } else {
-                predicates.add(criteriaBuilder.and(
-                        criteriaBuilder.isNull(root.get("reply")),
-                        criteriaBuilder.isEmpty(root.get("reply"))));
+                predicates.add(criteriaBuilder.isNull(root.get("reply")));
             }
         }
 
@@ -74,6 +70,8 @@ public class CustomerFeedbackRepositoryImpl implements CustomerFeedbackRepositor
         }
 
         query.where(predicates.toArray(new Predicate[0]));
+        query.orderBy(criteriaBuilder.asc(root.get("reply")));
+        query.orderBy(criteriaBuilder.desc(root.get("createdDate")));
 
         Query q = session.createQuery(query);
 
@@ -89,18 +87,18 @@ public class CustomerFeedbackRepositoryImpl implements CustomerFeedbackRepositor
 
     @Override
     public boolean addOrUpdateCustomerFeedback(CustomerFeedback feedback) {
-        if (feedback != null) {
-            Session session = sessionFactory.getObject().getCurrentSession();
-            try {
-                if (feedback.getId() == null) { //adding
-                    session.save(feedback);
-                } else { //updating
-                    session.update(feedback);
-                }
-            } catch (HibernateException e) {
+        if (feedback == null) return false;
+        Session session = sessionFactory.getObject().getCurrentSession();
+        try {
+            if (feedback.getId() == null) {
+                session.save(feedback);
+            } else {
+                session.update(feedback);
             }
+            return true;
+        } catch (HibernateException e) {
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -111,8 +109,8 @@ public class CustomerFeedbackRepositoryImpl implements CustomerFeedbackRepositor
             session.delete(feedback);
             return true;
         } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -122,8 +120,8 @@ public class CustomerFeedbackRepositoryImpl implements CustomerFeedbackRepositor
             session.delete(feedback);
             return true;
         } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
 }

@@ -1,6 +1,8 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
 import java.util.Set;
 import javax.persistence.Basic;
@@ -22,11 +24,13 @@ import lombok.Setter;
 public class Permission implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
-
+    
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private String value;
 

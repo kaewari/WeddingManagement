@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.qltc.components;
 
 import com.nimbusds.jose.JOSEException;
@@ -17,12 +13,7 @@ import java.text.ParseException;
 import java.util.Date;
 import org.springframework.stereotype.Component;
 
-/**
- *
- * @author sonho
- */
 @Component
-
 public class JwtService {
 
     public static final String SECRET_KEY = "THIS_IS_A_SECRET_KEY_TRY_TO_HACK_IT";

@@ -61,12 +61,12 @@ public class PermissionServiceImpl implements PermissionService {
     }
 
     @Override
-    public boolean resetAllPermissionsOfUser(User user) throws NoSuchFieldException {
+    public boolean resetAllPermissionsOfUser(User user){
         return permissionRepo.resetPermisisonOfUser(user);
     }
 
     @Override
-    public boolean resetAllPermissionsOfUserGroup(UserGroup userGroup) throws NoSuchFieldException {
+    public boolean resetAllPermissionsOfUserGroup(UserGroup userGroup) {
         return permissionRepo.resetPermissionOfUserGroup(userGroup);
     }
 

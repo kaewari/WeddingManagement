@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
- */
 package com.qltc.repository.impl;
 
 import com.qltc.pojo.User;
@@ -17,10 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- * @author sonho
- */
 @Repository
 @Transactional
 public class UserRepositoryImpl implements UserRepository {
@@ -101,4 +93,18 @@ public class UserRepositoryImpl implements UserRepository {
             return false;
         }
     }
+
+    @Override
+    public List<String> getPermissionsById(int userId) {
+        Session session = factory.getObject().getCurrentSession();
+        String queryString = "SELECT distinct(p.value) FROM permissions p WHERE p.id IN"
+        + "(SELECT ugp.permissionId FROM user_in_group uig JOIN user_group_permission ugp ON uig.groupId = ugp.groupId WHERE uig.userId = :userId AND ugp.allows = 1)"
+        + "OR p.id IN"
+        + "(SELECT up.permissionId FROM user_permission up WHERE up.userId = :userId AND up.allows = 1)";
+        Query query = session.createNativeQuery(queryString);
+        query.setParameter("userId", userId);
+        return query.getResultList();
+    }
+    
+    
 }

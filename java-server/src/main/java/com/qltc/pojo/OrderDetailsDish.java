@@ -1,6 +1,10 @@
 package com.qltc.pojo;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.qltc.json.JsonMarkup;
+import com.qltc.json.deserializer.OrderDetailsDishDeserializer;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,23 +22,29 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "order_dish_details")
+@JsonDeserialize(using = OrderDetailsDishDeserializer.class)
 public class OrderDetailsDish implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     private Integer id;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Integer quantity = 1;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private double price;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private float discount = 0;
     
+    @JsonView(JsonMarkup.CoreData.class)
     @Column(nullable = true)
     private String note;
     

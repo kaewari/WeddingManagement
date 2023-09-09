@@ -27,13 +27,23 @@ public class UserPermissionRepositoryImpl implements UserPermissionRepository {
     @Override
     public List<Permission> getPermissionsOfUserByUserId(int userId) {
         Session s = this.factory.getObject().getCurrentSession();
-        String queryString = "Select * From permissions Where id in "
-                + "(Select permissionId From user_permission Where userId=? and allow=1)";
-        Query query = s.createNativeQuery(queryString, Permission.class)
-                .setParameter(1, userId);
+        Query query = s.createNativeQuery("Select p.* From user_permission as up "
+                + "Join permissions as p on up.permissionId = p.id Where up.userId = :userId and up.allows = 1");
+        query.setParameter("userId", userId);
         return query.getResultList();
     }
-
+    
+    @Override
+    public List<String> getPermissionStringsByUserId(int id) {
+        Session s = this.factory.getObject().getCurrentSession();
+        Query query = s.createNativeQuery("Select p.value From user_permission as up "
+                + "Join permissions as p on up.permissionId = p.id "
+                + "Join user_group_permission ugp on ugp.permissionId = p.id "
+                + "Where up.userId = :userId and up.allows = 1");
+        query.setParameter("userId", id);
+        return query.getResultList();
+    }
+    
     @Override
     public UserPermission getUserPermissionById(int id) {
         try {

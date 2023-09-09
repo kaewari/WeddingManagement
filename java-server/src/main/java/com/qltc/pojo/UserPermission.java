@@ -1,5 +1,8 @@
 package com.qltc.pojo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.qltc.json.JsonMarkup;
 import java.io.Serializable;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -19,20 +22,21 @@ import lombok.Setter;
 public class UserPermission implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @JsonView(JsonMarkup.Identity.class)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
     private Integer id;
-
+    
+    @JsonView(JsonMarkup.CoreData.class)
     @Basic(optional = false)
     private Boolean allow;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "permissionId")
+    @JoinColumn(name = "permissionId", nullable = false)
     private Permission permission;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
     @Override
